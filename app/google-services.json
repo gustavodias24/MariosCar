@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1030891423393",
+    "project_id": "mario-s-car",
+    "storage_bucket": "mario-s-car.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1030891423393:android:26125302bb17132c5552e0",
+        "android_client_info": {
+          "package_name": "benicio.soluces.marioscar"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBfOZKC9-i2QEfqFQBk3uCAvPK4BDbg22E"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
