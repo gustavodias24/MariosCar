@@ -1,5 +1,7 @@
 package benicio.soluces.marioscar.adapters;
 
+import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
 import android.net.Uri;
 import android.view.LayoutInflater;
@@ -15,14 +17,18 @@ import com.squareup.picasso.Picasso;
 import java.util.List;
 
 import benicio.soluces.marioscar.R;
+import benicio.soluces.marioscar.databinding.ExibirImageAoClicarLayoutBinding;
+import benicio.soluces.marioscar.databinding.ImageLayoutBinding;
 
 public class AdapterImages extends RecyclerView.Adapter<AdapterImages.MyViewHolder>{
     List<String> images;
     Context c;
+    Activity a;
 
-    public AdapterImages(List<String> images, Context c) {
+    public AdapterImages(List<String> images, Context c, Activity a) {
         this.images = images;
         this.c = c;
+        this.a = a;
     }
 
     @NonNull
@@ -37,6 +43,14 @@ public class AdapterImages extends RecyclerView.Adapter<AdapterImages.MyViewHold
         Picasso.get().load(link).into(
                 holder.imagePreview
         );
+
+        holder.itemView.getRootView().setOnClickListener( view -> {
+            AlertDialog.Builder b = new AlertDialog.Builder(a);
+            ExibirImageAoClicarLayoutBinding imageLayoutBinding = ExibirImageAoClicarLayoutBinding.inflate(a.getLayoutInflater());
+            Picasso.get().load(link).into(imageLayoutBinding.imagemPreview);
+            b.setView(imageLayoutBinding.getRoot());
+            b.create().show();
+        });
     }
 
     @Override

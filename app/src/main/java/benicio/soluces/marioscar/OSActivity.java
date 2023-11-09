@@ -223,7 +223,7 @@ public class OSActivity extends AppCompatActivity {
         r.setLayoutManager(new LinearLayoutManager(getApplicationContext(), RecyclerView.HORIZONTAL, false));
         r.addItemDecoration(new DividerItemDecoration(getApplicationContext(), DividerItemDecoration.HORIZONTAL));
         r.setHasFixedSize(true);
-        adapterImages = new AdapterImages(imagesLink, getApplicationContext());
+        adapterImages = new AdapterImages(imagesLink, getApplicationContext(), this);
         r.setAdapter(adapterImages);
     }
 }

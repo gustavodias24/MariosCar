@@ -53,4 +53,24 @@
             android:text="ORDEM DE SERVIÇO"
             android:textColor="#FFFFFF"
             android:textStyle="bold" />
+
+        <Button
+            android:id="@+id/exibir_os"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp"
+            android:backgroundTint="#E00418"
+            android:text="EXIBIR OS"
+            android:textColor="#FFFFFF"
+            android:textStyle="bold" />
+
+        <Button
+            android:id="@+id/exibir_clientes"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp"
+            android:backgroundTint="#E00418"
+            android:text="EXIBIR CLIENTES"
+            android:textColor="#FFFFFF"
+            android:textStyle="bold" />
     </LinearLayout></ScrollView>
