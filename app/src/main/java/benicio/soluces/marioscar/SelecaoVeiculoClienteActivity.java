@@ -21,7 +21,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import benicio.soluces.marioscar.adapters.AdapterVeiculo;
-import benicio.soluces.marioscar.databinding.ActivitySelecaoClienteBinding;
 import benicio.soluces.marioscar.databinding.ActivitySelecaoVeiculoClienteBinding;
 import benicio.soluces.marioscar.model.VeiculoModel;
 
@@ -60,7 +59,10 @@ public class SelecaoVeiculoClienteActivity extends AppCompatActivity {
                 if ( snapshot.exists() ){
                     veiculos.clear();
                     for ( DataSnapshot dado : snapshot.getChildren()){
-                        veiculos.add(dado.getValue(VeiculoModel.class));
+                        VeiculoModel veiculoModel = dado.getValue(VeiculoModel.class);
+                        if (veiculoModel.getIdCliente().equals(bundle.getString("idCliente", "")) ){
+                            veiculos.add(veiculoModel);
+                        }
                     }
                     adapterVeiculo.notifyDataSetChanged();
                 }
@@ -78,7 +80,7 @@ public class SelecaoVeiculoClienteActivity extends AppCompatActivity {
         r.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
         r.addItemDecoration(new DividerItemDecoration(getApplicationContext(), DividerItemDecoration.VERTICAL));
         r.setHasFixedSize(true);
-        adapterVeiculo = new AdapterVeiculo(veiculos, getApplicationContext());
+        adapterVeiculo = new AdapterVeiculo(veiculos, getApplicationContext(), bundle.getInt("t", 0));
         r.setAdapter(adapterVeiculo);
     }
 

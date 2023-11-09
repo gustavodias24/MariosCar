@@ -28,13 +28,25 @@ public class MainActivity extends AppCompatActivity {
 
         mainBinding.veiculo.setOnClickListener( view -> {
             Intent i = new Intent(getApplicationContext(), SelecaoClienteActivity.class);
-            i.putExtra("t", 0);
+            i.putExtra("t", 444);
             startActivity(i);
         });
 
         mainBinding.os.setOnClickListener( view -> {
             Intent i = new Intent(getApplicationContext(), SelecaoClienteActivity.class);
+            i.putExtra("t", 555);
+            startActivity(i);
+        });
+
+        mainBinding.exibirOs.setOnClickListener( view -> {
+            Intent i = new Intent(getApplicationContext(), ExibicaoActivity.class);
             i.putExtra("t", 1);
+            startActivity(i);
+        });
+
+        mainBinding.exibirClientes.setOnClickListener( view -> {
+            Intent i = new Intent(getApplicationContext(), ExibicaoActivity.class);
+            i.putExtra("t", 666);
             startActivity(i);
         });
     }

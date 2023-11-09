@@ -40,12 +40,12 @@ public class OSModel {
     public String toString() {
 
         return "Descrição: " + descricao + '\n' +
-                "\nDescrição peça: " + descricaoPeca + '\n' +
-                "\nValor Total: R$ " + valorTotal + '\n' +
-                "\nValor Serviço: R$ " + valorService + '\n' +
-                "\nDesconto: R$ " + desconto + '\n' +
-                "\nTotal: R$ " + total + '\n' +
-                "\nObs: " + obs + '\n' +
+                "Descrição peça: " + descricaoPeca + '\n' +
+                "Valor Total: R$ " + valorTotal + '\n' +
+                "Valor Serviço: R$ " + valorService + '\n' +
+                "Desconto: R$ " + desconto + '\n' +
+                "Total: R$ " + total + '\n' +
+                "Obs: " + obs + '\n' +
                 "\nBateria: " + (bateria ? "Sim" : "Não") +
                 "\nAlarme: " + (alarme ? "Sim" : "Não") +
                 "\nBuzina: " + (buzina ? "Sim" : "Não") +

@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
 
+import benicio.soluces.marioscar.OSActivity;
 import benicio.soluces.marioscar.R;
 import benicio.soluces.marioscar.SelecaoVeiculoClienteActivity;
 import benicio.soluces.marioscar.VeiculoActivity;
@@ -45,12 +46,19 @@ public class AdapterCliente extends RecyclerView.Adapter<AdapterCliente.MyViewHo
         holder.itemView.getRootView().setOnClickListener( view -> {
             Intent i = null;
             switch (t){
-                case 0:
+                case 444:
                     i = new Intent(c, VeiculoActivity.class);
+                    i.putExtra("t", 444);
 
                     break;
-                case 1:
+                case 555:
                     i = new Intent(c, SelecaoVeiculoClienteActivity.class);
+                    i.putExtra("t", 555);
+
+                    break;
+                case 666:
+                    i = new Intent(c, SelecaoVeiculoClienteActivity.class);
+                    i.putExtra("t", 666);
                     break;
             }
 

@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
 
+import benicio.soluces.marioscar.ExibidorDeOSActivity;
 import benicio.soluces.marioscar.OSActivity;
 import benicio.soluces.marioscar.R;
 import benicio.soluces.marioscar.model.VeiculoModel;
@@ -20,9 +21,12 @@ public class AdapterVeiculo extends RecyclerView.Adapter<AdapterVeiculo.MyViewHo
     List<VeiculoModel> veiculos;
     Context c;
 
-    public AdapterVeiculo(List<VeiculoModel> veiculos, Context c) {
+    int t;
+
+    public AdapterVeiculo(List<VeiculoModel> veiculos, Context c, int t) {
         this.veiculos = veiculos;
         this.c = c;
+        this.t = t;
     }
 
     @NonNull
@@ -39,10 +43,23 @@ public class AdapterVeiculo extends RecyclerView.Adapter<AdapterVeiculo.MyViewHo
         );
 
         holder.itemView.getRootView().setOnClickListener( view -> {
-            Intent i = new Intent(c, OSActivity.class);
+            Intent i = null;
+            switch (t){
+                case 555:
+                    i = new Intent(c, OSActivity.class);
+                    break;
+                case 666:
+                    i =  new Intent(c, ExibidorDeOSActivity.class);
+                    break;
+            }
+
+            assert i != null;
             i.putExtra("idCarro", veiculoModel.getId());
+
             i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             c.startActivity(i);
+
+
         });
     }
 
