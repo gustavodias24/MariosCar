@@ -25,5 +25,17 @@ public class MainActivity extends AppCompatActivity {
         mainBinding.cliente.setOnClickListener( view -> {
             startActivity(new Intent(getApplicationContext(), ClienteActivity.class));
         });
+
+        mainBinding.veiculo.setOnClickListener( view -> {
+            Intent i = new Intent(getApplicationContext(), SelecaoClienteActivity.class);
+            i.putExtra("t", 0);
+            startActivity(i);
+        });
+
+        mainBinding.os.setOnClickListener( view -> {
+            Intent i = new Intent(getApplicationContext(), SelecaoClienteActivity.class);
+            i.putExtra("t", 1);
+            startActivity(i);
+        });
     }
 }

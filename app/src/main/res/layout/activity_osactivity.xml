@@ -1,0 +1,204 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true"
+    android:padding="8dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:padding="8dp"
+        tools:context=".OSActivity">
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/descricao_field"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Descrição do serviço">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/descricao_peça_field"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Descrição da peça">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/valor_total_field"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Valor Total">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="number|numberDecimal|numberSigned" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/valor_servico_field"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Valor serviço">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="number|numberDecimal|numberSigned" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/desconto_field"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Desconto">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="number|numberDecimal|numberSigned" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/total_field"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Total">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="number|numberDecimal|numberSigned" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <CheckBox
+            android:id="@+id/bateria"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Bateria" />
+
+        <CheckBox
+            android:id="@+id/alarme"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Alarme" />
+
+        <CheckBox
+            android:id="@+id/buzina"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Buzina" />
+
+        <CheckBox
+            android:id="@+id/trava"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Trava" />
+
+        <CheckBox
+            android:id="@+id/vidro"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Vidro" />
+
+        <CheckBox
+            android:id="@+id/tapete"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Tapete" />
+
+        <CheckBox
+            android:id="@+id/chaveRoda"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Chave de roda" />
+
+        <CheckBox
+            android:id="@+id/macaco"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Macaco" />
+
+        <CheckBox
+            android:id="@+id/triangulo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Triângulo" />
+
+        <CheckBox
+            android:id="@+id/extintor"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Extintor" />
+
+        <CheckBox
+            android:id="@+id/som"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Som" />
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/obs_field"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Obs">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+
+                android:text="\n\n\n"/>
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recycler_fotos"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            android:padding="8dp" />
+
+        <ImageButton
+            android:id="@+id/foto"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:backgroundTint="@color/red"
+            android:src="@drawable/baseline_add_a_photo_24" />
+
+        <Button
+            android:id="@+id/cadastrar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:backgroundTint="@color/red"
+            android:text="Cadastrar"
+            android:textColor="#F8F8F8" />
+
+
+    </LinearLayout>
+</ScrollView>
