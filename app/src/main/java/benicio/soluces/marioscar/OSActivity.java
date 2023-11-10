@@ -92,6 +92,7 @@ public class OSActivity extends AppCompatActivity {
             );
 
             String idCarro = b.getString("idCarro", "");
+            String placaCarro = b.getString("placaCarro", "");
 
             String descricao, descricaoPeca, valorTotal, valorService, desconto, total, obs;
 
@@ -105,6 +106,7 @@ public class OSActivity extends AppCompatActivity {
 
             refOs.child(id).setValue(
                     new OSModel(
+                            placaCarro,
                             id,
                             idCarro,
                             descricao, descricaoPeca,

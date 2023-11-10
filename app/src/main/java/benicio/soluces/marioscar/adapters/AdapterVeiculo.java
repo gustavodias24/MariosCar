@@ -55,6 +55,7 @@ public class AdapterVeiculo extends RecyclerView.Adapter<AdapterVeiculo.MyViewHo
 
             assert i != null;
             i.putExtra("idCarro", veiculoModel.getId());
+            i.putExtra("placaCarro", veiculoModel.getPlaca());
 
             i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             c.startActivity(i);

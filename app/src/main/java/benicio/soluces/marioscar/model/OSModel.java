@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class OSModel {
-    String id, idCarro, descricao, descricaoPeca, valorTotal, valorService, desconto, total,obs;
+    String id, idCarro,placaCarro, descricao, descricaoPeca, valorTotal, valorService, desconto, total,obs;
     List<String>  fotos = new ArrayList<>();
     Boolean bateria, alarme, buzina, trava, vidro, tapete, chaveRoda, macaco, triangulo,
     extintor, som;
@@ -12,7 +12,8 @@ public class OSModel {
     public OSModel() {
     }
 
-    public OSModel(String id, String idCarro, String descricao, String descricaoPeca, String valorTotal, String valorService, String desconto, String total, String obs, List<String> fotos, Boolean bateria, Boolean alarme, Boolean buzina, Boolean trava, Boolean vidro, Boolean tapete, Boolean chaveRoda, Boolean macaco, Boolean triangulo, Boolean extintor, Boolean som) {
+    public OSModel(String placaCarro, String id, String idCarro, String descricao, String descricaoPeca, String valorTotal, String valorService, String desconto, String total, String obs, List<String> fotos, Boolean bateria, Boolean alarme, Boolean buzina, Boolean trava, Boolean vidro, Boolean tapete, Boolean chaveRoda, Boolean macaco, Boolean triangulo, Boolean extintor, Boolean som) {
+        this.placaCarro = placaCarro;
         this.id = id;
         this.idCarro = idCarro;
         this.descricao = descricao;
@@ -57,6 +58,14 @@ public class OSModel {
                 "\nTriângulo: " + (triangulo ? "Sim" : "Não") +
                 "\nExtintor: " + (extintor ? "Sim" : "Não") +
                 "\nSom: " + (som ? "Sim" : "Não");
+    }
+
+    public String getPlacaCarro() {
+        return placaCarro;
+    }
+
+    public void setPlacaCarro(String placaCarro) {
+        this.placaCarro = placaCarro;
     }
 
     public String getId() {
