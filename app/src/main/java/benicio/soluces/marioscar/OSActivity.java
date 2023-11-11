@@ -61,6 +61,7 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 
 public class OSActivity extends AppCompatActivity {
+    private String id;
     Uri imageUri;
     private DatabaseReference refOs = FirebaseDatabase.getInstance().getReference().getRef().child("os");
     private Dialog dialogCarregando, dialogAdicionarItem;
@@ -81,8 +82,9 @@ public class OSActivity extends AppCompatActivity {
 
     List<ItemModel> itens = new ArrayList<>();
 
-    int numeroOs = 0;
+    int numeroOs = 1;
 
+    @SuppressLint("SetTextI18n")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -98,10 +100,48 @@ public class OSActivity extends AppCompatActivity {
 
         configurarDialogCarregando();
 
+        if ( b.getBoolean("isEdit", false)){
+            mainBinding.cadastrar.setText("Conluir a edição");
+            refOs.child(Objects.requireNonNull(b.getString("idOS"))).get().addOnCompleteListener(task -> {
+                if ( task.isSuccessful() ){
+                    OSModel os = task.getResult().getValue(OSModel.class);
+                    mainBinding.descricaoField.getEditText().setText(os.getDescricao());
+                    mainBinding.descricaoPeAField.getEditText().setText(os.getDescricaoPeca());
+                    mainBinding.valorTotalField.getEditText().setText(os.getValorTotal());
+                    mainBinding.valorTotalPecasField.getEditText().setText(os.getValorTotalPecas());
+                    mainBinding.valorServicoField.getEditText().setText(os.getValorService());
+                    mainBinding.descontoField.getEditText().setText(os.getDesconto());
+                    mainBinding.totalField.getEditText().setText(os.getTotal());
+                    mainBinding.obsField.getEditText().setText(os.getObs());
+
+                    imagesLink.addAll(os.getFotos());
+                    adapterImages.notifyDataSetChanged();
+                    itens.addAll(os.getItens());
+                    adapterItens.notifyDataSetChanged();
+
+                    mainBinding.bateria.setChecked(os.getBateria());
+                    mainBinding.alarme.setChecked(os.getAlarme());
+                    mainBinding.buzina.setChecked(os.getBuzina());
+                    mainBinding.trava.setChecked(os.getTrava());
+                    mainBinding.vidro.setChecked(os.getVidro());
+                    mainBinding.tapete.setChecked(os.getTapete());
+                    mainBinding.chaveRoda.setChecked(os.getChaveRoda());
+                    mainBinding.macaco.setChecked(os.getMacaco());
+                    mainBinding.triangulo.setChecked(os.getTriangulo());
+                    mainBinding.extintor.setChecked(os.getExtintor());
+                    mainBinding.som.setChecked(os.getSom());
+                }else{
+                    Toast.makeText(OSActivity.this, "Erro de conexão!", Toast.LENGTH_SHORT).show();
+                    finish();
+                }
+            });
+
+        }
+
         refOs.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                numeroOs = 0;
+                numeroOs = 1;
                 if ( snapshot.exists() ){
                     for ( DataSnapshot d : snapshot.getChildren()){
                         numeroOs++;
@@ -116,14 +156,17 @@ public class OSActivity extends AppCompatActivity {
             }
         });
 
-
-        mainBinding.cadastrar.setOnClickListener(view -> {
+       mainBinding.cadastrar.setOnClickListener(view -> {
             dialogCarregando.show();
             Toast.makeText(this, "Aguarde!", Toast.LENGTH_SHORT).show();
 
-            String id = Base64.getEncoder().encodeToString(
-                    UUID.randomUUID().toString().getBytes()
-            );
+            if ( !b.getBoolean("isEdit", false)){
+                id = Base64.getEncoder().encodeToString(
+                        UUID.randomUUID().toString().getBytes()
+                );
+            }else{
+                id = b.getString("idOS");
+            }
 
             String idCarro = b.getString("idCarro", "");
             String placaCarro = b.getString("placaCarro", "");
@@ -153,7 +196,8 @@ public class OSActivity extends AppCompatActivity {
                             idCarro,
                             descricao, descricaoPeca,
                             valorTotal, valorService, desconto, total, obs,
-                            imagesLink, mainBinding.bateria.isChecked(),
+                            imagesLink,
+                            mainBinding.bateria.isChecked(),
                             mainBinding.alarme.isChecked(),
                             mainBinding.buzina.isChecked(),
                             mainBinding.trava.isChecked(),
@@ -169,7 +213,11 @@ public class OSActivity extends AppCompatActivity {
                 if ( task.isSuccessful() ){
                     finish();
                     startActivity(new Intent(getApplicationContext(), MainActivity.class));
-                    Toast.makeText(getApplicationContext(), "OS cadastrada com sucesso.", Toast.LENGTH_LONG).show();
+                    if ( !b.getBoolean("isEdit", false)){
+                        Toast.makeText(getApplicationContext(), "OS cadastrada com sucesso.", Toast.LENGTH_LONG).show();
+                    }else{
+                        Toast.makeText(getApplicationContext(), "OS atualizada com sucesso.", Toast.LENGTH_LONG).show();
+                    }
                 }else{
                     Log.d("firebaseBucetinha", "onDataChange: " + task.getException().getMessage());
                     Log.d("firebaseBucetinha", "onDataChange: " + task.getException().getCause());

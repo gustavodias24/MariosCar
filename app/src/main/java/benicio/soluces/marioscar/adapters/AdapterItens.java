@@ -1,10 +1,12 @@
 package benicio.soluces.marioscar.adapters;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -29,11 +31,19 @@ public class AdapterItens extends RecyclerView.Adapter<AdapterItens.MyViewHolder
         return new MyViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.exibir_clientes, parent, false));
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
         ItemModel item = itens.get(position);
 
         holder.info.setText(item.toString());
+
+        holder.itemView.getRootView().setOnLongClickListener( view -> {
+            itens.remove(position);
+            Toast.makeText(c, "Item removido", Toast.LENGTH_SHORT).show();
+            this.notifyDataSetChanged();
+            return false;
+        });
     }
 
     @Override

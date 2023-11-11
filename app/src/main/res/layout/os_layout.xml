@@ -35,4 +35,33 @@
         android:layout_height="match_parent"
         android:orientation="horizontal"
         android:padding="8dp" />
+
+    <LinearLayout
+        android:id="@+id/admin_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:visibility="gone">
+
+        <Button
+            android:id="@+id/editarosbtn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp"
+            android:backgroundTint="#FFC107"
+            android:text="editar"
+            android:textAllCaps="true"
+            android:textStyle="bold" />
+
+        <Button
+            android:id="@+id/compartilharosbtn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp"
+            android:backgroundTint="#4CAF50"
+            android:text="compartilhar no whatsapp"
+            android:textAllCaps="true"
+            android:textStyle="bold" />
+    </LinearLayout>
+
 </LinearLayout>

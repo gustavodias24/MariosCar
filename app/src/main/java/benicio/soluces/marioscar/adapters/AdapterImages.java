@@ -1,5 +1,6 @@
 package benicio.soluces.marioscar.adapters;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
@@ -8,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -37,6 +39,7 @@ public class AdapterImages extends RecyclerView.Adapter<AdapterImages.MyViewHold
         return new MyViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.image_layout, parent, false));
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
         String link = images.get(position);
@@ -50,6 +53,13 @@ public class AdapterImages extends RecyclerView.Adapter<AdapterImages.MyViewHold
             Picasso.get().load(link).into(imageLayoutBinding.imagemPreview);
             b.setView(imageLayoutBinding.getRoot());
             b.create().show();
+        });
+
+        holder.itemView.getRootView().setOnLongClickListener( view -> {
+            images.remove(position);
+            Toast.makeText(c, "Item removido", Toast.LENGTH_SHORT).show();
+            this.notifyDataSetChanged();
+            return false;
         });
     }
 

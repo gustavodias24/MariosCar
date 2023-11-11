@@ -4,6 +4,9 @@ public class ItemModel {
     String nomeProduto;
     float valor, quantidade;
 
+    public ItemModel() {
+    }
+
     public ItemModel(String nomeProduto, float valor, float quantidade) {
         this.nomeProduto = nomeProduto;
         this.valor = valor;
