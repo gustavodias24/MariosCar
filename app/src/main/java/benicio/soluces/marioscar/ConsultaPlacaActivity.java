@@ -64,7 +64,7 @@ public class ConsultaPlacaActivity extends AppCompatActivity {
                         OSModel osModel = dado.getValue(OSModel.class);
 
                         if ( osModel != null && osModel.getPlacaCarro() != null){
-                            if (osModel.getPlacaCarro().trim().equals(placa.trim())){
+                            if (osModel.getPlacaCarro().toLowerCase().trim().equals(placa.toLowerCase().trim())){
                                 oss.add(osModel);
                             }
                         }

@@ -24,19 +24,29 @@ import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+import com.google.gson.internal.bind.DateTypeAdapter;
 
 import java.io.File;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Base64;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.UUID;
 
 import benicio.soluces.marioscar.adapters.AdapterImages;
+import benicio.soluces.marioscar.adapters.AdapterItens;
 import benicio.soluces.marioscar.databinding.ActivityOsactivityBinding;
+import benicio.soluces.marioscar.databinding.LayoutAdicionarItemBinding;
 import benicio.soluces.marioscar.databinding.LoadingLayoutBinding;
+import benicio.soluces.marioscar.model.ItemModel;
 import benicio.soluces.marioscar.model.OSModel;
 import benicio.soluces.marioscar.model.ResponseIngurModel;
 import benicio.soluces.marioscar.utils.ImageUtils;
@@ -53,7 +63,7 @@ import retrofit2.Retrofit;
 public class OSActivity extends AppCompatActivity {
     Uri imageUri;
     private DatabaseReference refOs = FirebaseDatabase.getInstance().getReference().getRef().child("os");
-    private Dialog dialogCarregando;
+    private Dialog dialogCarregando, dialogAdicionarItem;
     private static final int PERMISSON_CODE = 1000;
     private static final int REQUEST_IMAGE_CAPTURE = 1;
     private static final String TOKEN = "282c6d7932402b7665da78ee7c51311556ce6c8a";
@@ -62,11 +72,16 @@ public class OSActivity extends AppCompatActivity {
     ServiceIngur serviceIngur = RetrofitUtils.createServiceIngur(retrofitIngur);
 
     AdapterImages adapterImages;
+    AdapterItens adapterItens;
     RecyclerView r;
+    RecyclerView rItens;
     List<String> imagesLink = new ArrayList<>();
 
     private Bundle b;
 
+    List<ItemModel> itens = new ArrayList<>();
+
+    int numeroOs = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -83,6 +98,25 @@ public class OSActivity extends AppCompatActivity {
 
         configurarDialogCarregando();
 
+        refOs.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                numeroOs = 0;
+                if ( snapshot.exists() ){
+                    for ( DataSnapshot d : snapshot.getChildren()){
+                        numeroOs++;
+                    }
+
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+
+
         mainBinding.cadastrar.setOnClickListener(view -> {
             dialogCarregando.show();
             Toast.makeText(this, "Aguarde!", Toast.LENGTH_SHORT).show();
@@ -94,18 +128,26 @@ public class OSActivity extends AppCompatActivity {
             String idCarro = b.getString("idCarro", "");
             String placaCarro = b.getString("placaCarro", "");
 
-            String descricao, descricaoPeca, valorTotal, valorService, desconto, total, obs;
+            String descricao, descricaoPeca, valorTotal, valorService, desconto, total, obs, valorTotalPecas;
 
             descricao = mainBinding.descricaoField.getEditText().getText().toString();
             descricaoPeca = mainBinding.descricaoPeAField.getEditText().getText().toString();
             valorTotal = mainBinding.valorTotalField.getEditText().getText().toString();
+            valorTotalPecas = mainBinding.valorTotalPecasField.getEditText().getText().toString();
             valorService = mainBinding.valorServicoField.getEditText().getText().toString();
             desconto = mainBinding.descontoField.getEditText().getText().toString();
             total = mainBinding.totalField.getEditText().getText().toString();
             obs = mainBinding.obsField.getEditText().getText().toString();
 
+
+            Date currentDate = new Date();
+            SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
             refOs.child(id).setValue(
                     new OSModel(
+                            padWithZeros(numeroOs+"" , 6),
+                            dateFormat.format(currentDate),
+                            itens,
+                            valorTotalPecas,
                             placaCarro,
                             id,
                             idCarro,
@@ -127,9 +169,11 @@ public class OSActivity extends AppCompatActivity {
                 if ( task.isSuccessful() ){
                     finish();
                     startActivity(new Intent(getApplicationContext(), MainActivity.class));
-                    Toast.makeText(this, "OS cadastrada com sucesso.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(), "OS cadastrada com sucesso.", Toast.LENGTH_LONG).show();
                 }else{
-                    Toast.makeText(this, "Erro de conexão, tente novamente.", Toast.LENGTH_SHORT).show();
+                    Log.d("firebaseBucetinha", "onDataChange: " + task.getException().getMessage());
+                    Log.d("firebaseBucetinha", "onDataChange: " + task.getException().getCause());
+                    Toast.makeText(getApplicationContext(), "Erro de conexão, tente novamente.", Toast.LENGTH_LONG).show();
                     dialogCarregando.dismiss();
                 }
             });
@@ -140,9 +184,49 @@ public class OSActivity extends AppCompatActivity {
            baterFoto();
        });
 
+       mainBinding.adicionarPeca.setOnClickListener( view -> {
+           dialogAdicionarItem.show();
+       });
+
         configurarRecyclerImages();
+        configurarRecyclerItens();
+        configurarDialogProduto();
     }
 
+    private void configurarRecyclerItens() {
+        rItens = mainBinding.recyclerPecas;
+        rItens.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
+        rItens.setHasFixedSize(true);
+        rItens.addItemDecoration(new DividerItemDecoration(getApplicationContext(), DividerItemDecoration.VERTICAL));
+        adapterItens = new AdapterItens(itens, getApplicationContext());
+        rItens.setAdapter(adapterItens);
+    }
+
+    @SuppressLint("NotifyDataSetChanged")
+    private void configurarDialogProduto(){
+        AlertDialog.Builder b = new AlertDialog.Builder(OSActivity.this);
+        LayoutAdicionarItemBinding adicionarItemBinding = LayoutAdicionarItemBinding.inflate(getLayoutInflater());
+        adicionarItemBinding.adicionarPeca.setOnClickListener( view -> {
+            String nomePeca = adicionarItemBinding.nomeField.getEditText().getText().toString();
+            String quantidadeString = adicionarItemBinding.quantiadeField.getEditText().getText().toString();
+            String precoString = adicionarItemBinding.valorField.getEditText().getText().toString();
+
+            quantidadeString = quantidadeString.isEmpty() ? "0.0" : quantidadeString;
+            precoString = precoString.isEmpty() ? "0.0" : precoString;
+
+            float quantiade = Float.parseFloat(quantidadeString);
+            float  preco = Float.parseFloat(precoString);
+
+            itens.add(new ItemModel(nomePeca, preco, quantiade));
+            adapterItens.notifyDataSetChanged();
+            dialogAdicionarItem.dismiss();
+            adicionarItemBinding.nomeField.getEditText().setText("");
+            adicionarItemBinding.quantiadeField.getEditText().setText("0");
+            adicionarItemBinding.valorField.getEditText().setText("0");
+        });
+        b.setView(adicionarItemBinding.getRoot());
+        dialogAdicionarItem  = b.create();
+    }
     private void configurarDialogCarregando() {
         AlertDialog.Builder b = new AlertDialog.Builder(OSActivity.this);
         b.setView(LoadingLayoutBinding.inflate(getLayoutInflater()).getRoot());
@@ -236,5 +320,15 @@ public class OSActivity extends AppCompatActivity {
             finish();
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    public static String padWithZeros(String input, int desiredLength) {
+        StringBuilder result = new StringBuilder(input);
+
+        while (result.length() < desiredLength) {
+            result.insert(0, "0");
+        }
+
+        return result.toString();
     }
 }

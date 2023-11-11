@@ -1,18 +1,28 @@
 package benicio.soluces.marioscar.model;
 
+import android.annotation.SuppressLint;
+
 import java.util.ArrayList;
 import java.util.List;
 
 public class OSModel {
-    String id, idCarro,placaCarro, descricao, descricaoPeca, valorTotal, valorService, desconto, total,obs;
+    String id, idCarro,placaCarro, descricao, descricaoPeca, valorTotal, valorService, desconto, total,obs, valorTotalPecas;
     List<String>  fotos = new ArrayList<>();
+    List<ItemModel> itens = new ArrayList<>();
+
+    String numeroOs;
+    String data;
     Boolean bateria, alarme, buzina, trava, vidro, tapete, chaveRoda, macaco, triangulo,
     extintor, som;
 
     public OSModel() {
     }
 
-    public OSModel(String placaCarro, String id, String idCarro, String descricao, String descricaoPeca, String valorTotal, String valorService, String desconto, String total, String obs, List<String> fotos, Boolean bateria, Boolean alarme, Boolean buzina, Boolean trava, Boolean vidro, Boolean tapete, Boolean chaveRoda, Boolean macaco, Boolean triangulo, Boolean extintor, Boolean som) {
+    public OSModel(String numeroOs,String data,List<ItemModel> itens, String valorTotalPecas, String placaCarro, String id, String idCarro, String descricao, String descricaoPeca, String valorTotal, String valorService, String desconto, String total, String obs, List<String> fotos, Boolean bateria, Boolean alarme, Boolean buzina, Boolean trava, Boolean vidro, Boolean tapete, Boolean chaveRoda, Boolean macaco, Boolean triangulo, Boolean extintor, Boolean som) {
+        this.numeroOs = numeroOs;
+        this.data = data;
+        this.itens = itens;
+        this.valorTotalPecas = valorTotalPecas;
         this.placaCarro = placaCarro;
         this.id = id;
         this.idCarro = idCarro;
@@ -37,11 +47,23 @@ public class OSModel {
         this.som = som;
     }
 
+    @SuppressLint("DefaultLocale")
     @Override
     public String toString() {
+        StringBuilder itensString = new StringBuilder("");
 
-        return "Descrição: " + descricao + '\n' +
-                "Descrição peça: " + descricaoPeca + '\n' +
+        for ( ItemModel item : itens){
+            Float valorTotal = item.getValor() * item.getQuantidade();
+            itensString.append(
+                    String.format("%s R$ %.2f X%.2f R$%.2f", item.getNomeProduto(), item.getValor(), item.getQuantidade(), valorTotal)
+            ).append('\n');
+        }
+
+        return  "Número da OS: " + numeroOs + '\n' +
+                "Data: " + data + '\n' +
+                "Descrição: " + descricao + '\n' +
+                "Descrição peça:\n" + itensString + '\n' +
+                "Valor total das peças: " + valorTotalPecas + '\n' +
                 "Valor Total: R$ " + valorTotal + '\n' +
                 "Valor Serviço: R$ " + valorService + '\n' +
                 "Desconto: R$ " + desconto + '\n' +
@@ -58,6 +80,38 @@ public class OSModel {
                 "\nTriângulo: " + (triangulo ? "Sim" : "Não") +
                 "\nExtintor: " + (extintor ? "Sim" : "Não") +
                 "\nSom: " + (som ? "Sim" : "Não");
+    }
+
+    public List<ItemModel> getItens() {
+        return itens;
+    }
+
+    public void setItens(List<ItemModel> itens) {
+        this.itens = itens;
+    }
+
+    public String getNumeroOs() {
+        return numeroOs;
+    }
+
+    public void setNumeroOs(String numeroOs) {
+        this.numeroOs = numeroOs;
+    }
+
+    public String getData() {
+        return data;
+    }
+
+    public void setData(String data) {
+        this.data = data;
+    }
+
+    public String getValorTotalPecas() {
+        return valorTotalPecas;
+    }
+
+    public void setValorTotalPecas(String valorTotalPecas) {
+        this.valorTotalPecas = valorTotalPecas;
     }
 
     public String getPlacaCarro() {

@@ -27,6 +27,20 @@
 
         </com.google.android.material.textfield.TextInputLayout>
 
+        <Button
+            android:id="@+id/adicionar_peca"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp"
+            android:backgroundTint="@color/red"
+            android:text="Adicionar peça ao serviço"
+            android:textColor="#F8F8F8" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recycler_pecas"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/descricao_peça_field"
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
@@ -37,6 +51,20 @@
             <com.google.android.material.textfield.TextInputEditText
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/valor_total_pecas_field"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Valor Total das peças">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="number|numberDecimal|numberSigned" />
 
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -59,7 +87,7 @@
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Valor serviço">
+            android:hint="Valor do serviço">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:layout_width="match_parent"
