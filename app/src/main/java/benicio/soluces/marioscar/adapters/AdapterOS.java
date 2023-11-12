@@ -1,36 +1,76 @@
 package benicio.soluces.marioscar.adapters;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.Paint;
+import android.graphics.Typeface;
+import android.graphics.pdf.PdfDocument;
+import android.media.Image;
+import android.net.Uri;
+import android.os.AsyncTask;
+import android.os.Environment;
+import android.system.Os;
+import android.util.Base64;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
+import androidx.core.content.FileProvider;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 import benicio.soluces.marioscar.OSActivity;
 import benicio.soluces.marioscar.R;
+import benicio.soluces.marioscar.databinding.LoadingLayoutBinding;
+import benicio.soluces.marioscar.model.ItemModel;
 import benicio.soluces.marioscar.model.OSModel;
 import kotlin.jvm.internal.Lambda;
 
 public class AdapterOS extends RecyclerView.Adapter<AdapterOS.MyViewHolder> {
+    int posFotoX;
+    int posFotosY;
+    List<Bitmap> bitmaps = new ArrayList<>();
     List<OSModel> oss;
     Activity a;
     Context c;
 
+    Dialog d;
+
+    public interface OnPdfTaskCompleted {
+        void onTaskCompleted();
+    }
     public AdapterOS(List<OSModel> oss, Activity a, Context c) {
         this.oss = oss;
         this.a = a;
         this.c = c;
+        AlertDialog.Builder b = new AlertDialog.Builder(a);
+        b.setView(LoadingLayoutBinding.inflate(a.getLayoutInflater()).getRoot());
+        this.d = b.create();
     }
 
     @NonNull
@@ -61,6 +101,11 @@ public class AdapterOS extends RecyclerView.Adapter<AdapterOS.MyViewHolder> {
             c.startActivity(i);
         });
 
+        holder.compartilharOS.setOnClickListener( view -> {
+            d.show();
+            gerarPdfOS(osModel);
+        });
+
     }
 
     @Override
@@ -83,5 +128,152 @@ public class AdapterOS extends RecyclerView.Adapter<AdapterOS.MyViewHolder> {
             editarOS = itemView.findViewById(R.id.editarosbtn);
         }
     }
+    private class CreateBitmapTask extends AsyncTask<Void, Void, Void> {
+        List<String> urlImages;
+        private OnPdfTaskCompleted callback;
+        public CreateBitmapTask(List<String> urlImages, OnPdfTaskCompleted callback) {
+            this.urlImages = urlImages;
+            this.callback = callback;
+        }
+        @Override
+        protected void onPostExecute(Void unused) {
+            super.onPostExecute(unused);
+            if (callback != null) {
+                callback.onTaskCompleted();
+            }
+        }
+        @Override
+        protected Void doInBackground(Void... voids) {
+            for (String urlImage : this.urlImages){
+                bitmaps.add(downloadImage(urlImage));
+            }
+            return null;
+        }
+        private Bitmap downloadImage(String imageUrl) {
+            try {
+                URL url = new URL(imageUrl);
+                HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+                connection.setDoInput(true);
+                connection.connect();
+                InputStream input = connection.getInputStream();
+                return BitmapFactory.decodeStream(input);
+            } catch (IOException e) {
+                e.printStackTrace();
+                return null;
+            }
+        }
+    }
 
+    public void gerarPdfOS(OSModel osModel){
+
+        Bitmap bmpTemplate = BitmapFactory.decodeResource(a.getResources(), R.raw.templaterelatorio);
+        Bitmap scaledbmpTemplate = Bitmap.createScaledBitmap(bmpTemplate, 792, 1120, false);
+        int pageHeight = 1120;
+        int pagewidth = 792;
+
+        PdfDocument pdfDocument = new PdfDocument();
+
+        Paint paint = new Paint();
+        Paint title = new Paint();
+        Paint restante = new Paint();
+
+        PdfDocument.PageInfo mypageInfo = new PdfDocument.PageInfo.Builder(pagewidth, pageHeight, 1).create();
+        PdfDocument.Page myPage = pdfDocument.startPage(mypageInfo);
+
+        Canvas canvas = myPage.getCanvas();
+
+        canvas.drawBitmap(scaledbmpTemplate, 1, 1, paint);
+
+        title.setTextSize(16);
+        title.setTypeface(Typeface.defaultFromStyle(Typeface.BOLD));
+        title.setColor(ContextCompat.getColor(a, R.color.black));
+
+        restante.setTextSize(10);
+        restante.setTypeface(Typeface.defaultFromStyle(Typeface.NORMAL));
+        restante.setColor(ContextCompat.getColor(a, R.color.black));
+
+        canvas.drawText(osModel.getNumeroOs(), 264, 88, title);
+        canvas.drawText(osModel.getData(), 571, 88, title);
+
+        canvas.drawText("Peças da OS: ", 120, 140, title);
+
+        int espacamentoEntrePecas = 10;
+
+        int startX = 167;
+        int startY = 160;
+
+        for (ItemModel item : osModel.getItens()){
+            canvas.drawText(item.toString(), startX, startY, restante);
+            startY += espacamentoEntrePecas;
+        }
+
+        int posCompletoY = startY + 20;
+        canvas.drawText("Descrição completa: ", 120, posCompletoY, title);
+        posCompletoY += 20;
+        for ( String linhaDaOs : osModel.toString().split("\n")) {
+            posCompletoY += 10;
+            canvas.drawText(linhaDaOs, startX, posCompletoY, restante);
+        }
+
+        posFotosY = posCompletoY + 20;
+        canvas.drawText("Fotos: ", 120, posFotosY, title);
+        posFotosY += 20;
+        posFotoX = 120;
+
+
+        new CreateBitmapTask(osModel.getFotos(), () -> {
+
+            for ( Bitmap bitmap : bitmaps){
+                Bitmap resizedBitmap = Bitmap.createScaledBitmap(bitmap, 120, 120, false);
+                canvas.drawBitmap( resizedBitmap, posFotoX, posFotosY, paint);
+                posFotoX += 130;
+            }
+
+            pdfDocument.finishPage(myPage);
+
+            File documentosDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS);
+
+            File kaizenProjetosDir = new File(documentosDir, "MARIOSCAR");
+            if (!kaizenProjetosDir.exists()) {
+                kaizenProjetosDir.mkdirs();
+            }
+
+            String nomeArquivo = "os_" + osModel.getNumeroOs().replace(" ", "_") + "_" + osModel.getData().replace("/", "_") + ".pdf";
+            File file = new File(kaizenProjetosDir, nomeArquivo);
+            try {
+                pdfDocument.writeTo(new FileOutputStream(file));
+                Toast.makeText(a, "PDF salvo em Documents/MARIOSCAR", Toast.LENGTH_SHORT).show();
+            } catch (IOException e) {
+                AlertDialog.Builder b = new AlertDialog.Builder(a);
+                b.setTitle("Aviso");
+                b.setMessage(e.getMessage());
+                b.setPositiveButton("Fechar", null);
+                b.create().show();
+                e.printStackTrace();
+            }
+            pdfDocument.close();
+            d.dismiss();
+
+            compartilharPDFViaWhatsApp(file);
+
+        }).execute();
+    }
+
+    private void compartilharPDFViaWhatsApp(File file) {
+
+        Uri contentUri = FileProvider.getUriForFile(a, a.getPackageName() + ".provider", file);
+
+        Intent intent = new Intent(Intent.ACTION_SEND);
+        intent.setType("application/pdf");
+        intent.putExtra(Intent.EXTRA_STREAM, contentUri);
+        intent.setPackage("com.whatsapp"); // Especifica o pacote do WhatsApp
+        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+
+        try {
+            a.startActivity(intent);
+        } catch (android.content.ActivityNotFoundException ex) {
+            // WhatsApp não instalado
+            Toast.makeText(a, "WhatsApp não está instalado", Toast.LENGTH_SHORT).show();
+        }
+    }
 }
