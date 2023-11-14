@@ -71,9 +71,8 @@ public class OSModel {
                 "Data: " + data + '\n' +
                 "Descrição: " + descricao + '\n' +
                 "Descrição peça:\n" + itensString + '\n' +
-                "Valor total das peças: " + valorTotalPecas + '\n' +
-                "Valor Total: R$ " + valorTotal + '\n' +
-                "Valor Serviço: R$ " + valorService + '\n' +
+                "Valor total das peças: R$" + valorTotalPecas + '\n' +
+                "Valor total dos serviços: R$ " + valorService + '\n' +
                 "Desconto: R$ " + desconto + '\n' +
                 "Total: R$ " + total + '\n' +
                 "Obs: " + obs + '\n' +
