@@ -51,6 +51,8 @@ import benicio.soluces.marioscar.databinding.SelectCameraOrGaleryLayoutBinding;
 import benicio.soluces.marioscar.model.ItemModel;
 import benicio.soluces.marioscar.model.OSModel;
 import benicio.soluces.marioscar.model.ResponseIngurModel;
+import benicio.soluces.marioscar.model.UsuarioModel;
+import benicio.soluces.marioscar.model.VeiculoModel;
 import benicio.soluces.marioscar.utils.ImageUtils;
 import benicio.soluces.marioscar.utils.RetrofitUtils;
 import benicio.soluces.marioscar.services.ServiceIngur;
@@ -63,14 +65,16 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 
 public class OSActivity extends AppCompatActivity {
+    private DatabaseReference refClientes = FirebaseDatabase.getInstance().getReference().getRef().child("clientes");
+    private DatabaseReference refVeiculos = FirebaseDatabase.getInstance().getReference().getRef().child("veiculos");
+    private DatabaseReference refOs = FirebaseDatabase.getInstance().getReference().getRef().child("os");
 
-    private Dialog dialogSelecionarFoto;
+    private Dialog  dialogSelecionarFoto;
     private static final int REQUEST_IMAGE_CAPTURE = 1;
 
     private static final int PICK_IMAGE_REQUEST = 2;
     private String id;
     Uri imageUri;
-    private DatabaseReference refOs = FirebaseDatabase.getInstance().getReference().getRef().child("os");
     private Dialog dialogCarregando, dialogAdicionarItem, dialogAdicionarServico;
     private static final int PERMISSON_CODE = 1000;
     private static final String TOKEN = "282c6d7932402b7665da78ee7c51311556ce6c8a";
@@ -85,12 +89,9 @@ public class OSActivity extends AppCompatActivity {
     RecyclerView rItens;
     RecyclerView rServicos;
     List<String> imagesLink = new ArrayList<>();
-
     private Bundle b;
-
     List<ItemModel> itens = new ArrayList<>();
     List<ItemModel> servicos = new ArrayList<>();
-
     int numeroOs = 1;
 
     @SuppressLint("SetTextI18n")
@@ -179,12 +180,12 @@ public class OSActivity extends AppCompatActivity {
 
             String idCarro = b.getString("idCarro", "");
             String placaCarro = b.getString("placaCarro", "");
+            String idCliente = b.getString("idCliente", "");
 
             String descricao, descricaoPeca, valorTotal, valorService, desconto, total, obs, valorTotalPecas;
 
             descricao = mainBinding.descricaoField.getEditText().getText().toString();
             descricaoPeca = mainBinding.descricaoPeAField.getEditText().getText().toString();
-//            valorTotal = mainBinding.valorTotalField.getEditText().getText().toString();
             valorTotalPecas = mainBinding.valorTotalPecasField.getEditText().getText().toString();
             valorService = mainBinding.valorServicoField.getEditText().getText().toString();
             desconto = mainBinding.descontoField.getEditText().getText().toString();
@@ -194,47 +195,65 @@ public class OSActivity extends AppCompatActivity {
 
             Date currentDate = new Date();
             SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
-            refOs.child(id).setValue(
-                    new OSModel(
-                            padWithZeros(numeroOs+"" , 6),
-                            dateFormat.format(currentDate),
-                            itens,
-                            valorTotalPecas,
-                            placaCarro,
-                            id,
-                            idCarro,
-                            descricao, descricaoPeca,
-                            total, valorService, desconto, total, obs,
-                            imagesLink,
-                            mainBinding.bateria.isChecked(),
-                            mainBinding.alarme.isChecked(),
-                            mainBinding.buzina.isChecked(),
-                            mainBinding.trava.isChecked(),
-                            mainBinding.vidro.isChecked(),
-                            mainBinding.tapete.isChecked(),
-                            mainBinding.chaveRoda.isChecked(),
-                            mainBinding.macaco.isChecked(),
-                            mainBinding.triangulo.isChecked(),
-                            mainBinding.extintor.isChecked(),
-                            mainBinding.som.isChecked()
-                    )
-            ).addOnCompleteListener(task -> {
+
+            refClientes.child(idCliente).get().addOnCompleteListener(task -> {
                 if ( task.isSuccessful() ){
-                    finish();
-                    startActivity(new Intent(getApplicationContext(), MainActivity.class));
-                    if ( !b.getBoolean("isEdit", false)){
-                        Toast.makeText(getApplicationContext(), "OS cadastrada com sucesso.", Toast.LENGTH_LONG).show();
-                    }else{
-                        Toast.makeText(getApplicationContext(), "OS atualizada com sucesso.", Toast.LENGTH_LONG).show();
-                    }
+                    UsuarioModel cliente = task.getResult().getValue(UsuarioModel.class);
+                    refVeiculos.child(idCarro).get().addOnCompleteListener(task1 -> {
+                        if ( task1.isSuccessful() ){
+                            VeiculoModel veiculo = task1.getResult().getValue(VeiculoModel.class);
+                            refOs.child(id).setValue(
+                                    new OSModel(
+                                            veiculo,
+                                            cliente,
+                                            idCliente,
+                                            servicos,
+                                            padWithZeros(numeroOs+"" , 6),
+                                            dateFormat.format(currentDate),
+                                            itens,
+                                            valorTotalPecas,
+                                            placaCarro,
+                                            id,
+                                            idCarro,
+                                            descricao, descricaoPeca,
+                                            total, valorService, desconto, total, obs,
+                                            imagesLink,
+                                            mainBinding.bateria.isChecked(),
+                                            mainBinding.alarme.isChecked(),
+                                            mainBinding.buzina.isChecked(),
+                                            mainBinding.trava.isChecked(),
+                                            mainBinding.vidro.isChecked(),
+                                            mainBinding.tapete.isChecked(),
+                                            mainBinding.chaveRoda.isChecked(),
+                                            mainBinding.macaco.isChecked(),
+                                            mainBinding.triangulo.isChecked(),
+                                            mainBinding.extintor.isChecked(),
+                                            mainBinding.som.isChecked()
+                                    )
+                            ).addOnCompleteListener(task2 -> {
+                                if ( task.isSuccessful() ){
+                                    finish();
+                                    startActivity(new Intent(getApplicationContext(), MainActivity.class));
+                                    if ( !b.getBoolean("isEdit", false)){
+                                        Toast.makeText(getApplicationContext(), "OS cadastrada com sucesso.", Toast.LENGTH_LONG).show();
+                                    }else{
+                                        Toast.makeText(getApplicationContext(), "OS atualizada com sucesso.", Toast.LENGTH_LONG).show();
+                                    }
+                                }else{
+                                    Log.d("firebaseBucetinha", "onDataChange: " + task.getException().getMessage());
+                                    Log.d("firebaseBucetinha", "onDataChange: " + task.getException().getCause());
+                                    Toast.makeText(getApplicationContext(), "Erro de conexão, tente novamente.", Toast.LENGTH_LONG).show();
+                                    dialogCarregando.dismiss();
+                                }
+                            });
+                        }else{
+                            Toast.makeText(OSActivity.this, "Problema de conexão", Toast.LENGTH_SHORT).show();
+                        }
+                    });
                 }else{
-                    Log.d("firebaseBucetinha", "onDataChange: " + task.getException().getMessage());
-                    Log.d("firebaseBucetinha", "onDataChange: " + task.getException().getCause());
-                    Toast.makeText(getApplicationContext(), "Erro de conexão, tente novamente.", Toast.LENGTH_LONG).show();
-                    dialogCarregando.dismiss();
+                    Toast.makeText(OSActivity.this, "Problema de conexão", Toast.LENGTH_SHORT).show();
                 }
             });
-
         });
 
        mainBinding.selecionarFoto.setOnClickListener( view -> {

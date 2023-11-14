@@ -6,19 +6,27 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class OSModel {
-    String id, idCarro,placaCarro, descricao, descricaoPeca, valorTotal, valorService, desconto, total,obs, valorTotalPecas;
+    String id, idCarro, idCliente,placaCarro, descricao, descricaoPeca, valorTotal, valorService, desconto, total,obs, valorTotalPecas;
     List<String>  fotos = new ArrayList<>();
     List<ItemModel> itens = new ArrayList<>();
+    List<ItemModel> servicos = new ArrayList<>();
 
     String numeroOs;
     String data;
     Boolean bateria, alarme, buzina, trava, vidro, tapete, chaveRoda, macaco, triangulo,
     extintor, som;
 
+    VeiculoModel veiculoModel;
+    UsuarioModel usuarioModel;
+
     public OSModel() {
     }
 
-    public OSModel(String numeroOs,String data,List<ItemModel> itens, String valorTotalPecas, String placaCarro, String id, String idCarro, String descricao, String descricaoPeca, String valorTotal, String valorService, String desconto, String total, String obs, List<String> fotos, Boolean bateria, Boolean alarme, Boolean buzina, Boolean trava, Boolean vidro, Boolean tapete, Boolean chaveRoda, Boolean macaco, Boolean triangulo, Boolean extintor, Boolean som) {
+    public OSModel(VeiculoModel veiculoModel, UsuarioModel usuarioModel, String idCliente, List<ItemModel> servicos, String numeroOs,String data,List<ItemModel> itens, String valorTotalPecas, String placaCarro, String id, String idCarro, String descricao, String descricaoPeca, String valorTotal, String valorService, String desconto, String total, String obs, List<String> fotos, Boolean bateria, Boolean alarme, Boolean buzina, Boolean trava, Boolean vidro, Boolean tapete, Boolean chaveRoda, Boolean macaco, Boolean triangulo, Boolean extintor, Boolean som) {
+        this.veiculoModel = veiculoModel;
+        this.usuarioModel = usuarioModel;
+        this.idCliente = idCliente;
+        this.servicos = servicos;
         this.numeroOs = numeroOs;
         this.data = data;
         this.itens = itens;
@@ -80,6 +88,38 @@ public class OSModel {
                 "\nTriângulo: " + (triangulo ? "Sim" : "Não") +
                 "\nExtintor: " + (extintor ? "Sim" : "Não") +
                 "\nSom: " + (som ? "Sim" : "Não");
+    }
+
+    public VeiculoModel getVeiculoModel() {
+        return veiculoModel;
+    }
+
+    public void setVeiculoModel(VeiculoModel veiculoModel) {
+        this.veiculoModel = veiculoModel;
+    }
+
+    public UsuarioModel getUsuarioModel() {
+        return usuarioModel;
+    }
+
+    public void setUsuarioModel(UsuarioModel usuarioModel) {
+        this.usuarioModel = usuarioModel;
+    }
+
+    public String getIdCliente() {
+        return idCliente;
+    }
+
+    public void setIdCliente(String idCliente) {
+        this.idCliente = idCliente;
+    }
+
+    public List<ItemModel> getServicos() {
+        return servicos;
+    }
+
+    public void setServicos(List<ItemModel> servicos) {
+        this.servicos = servicos;
     }
 
     public List<ItemModel> getItens() {

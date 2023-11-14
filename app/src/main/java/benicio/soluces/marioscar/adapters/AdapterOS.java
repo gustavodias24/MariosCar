@@ -33,6 +33,9 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -49,11 +52,13 @@ import benicio.soluces.marioscar.R;
 import benicio.soluces.marioscar.databinding.LoadingLayoutBinding;
 import benicio.soluces.marioscar.model.ItemModel;
 import benicio.soluces.marioscar.model.OSModel;
+import benicio.soluces.marioscar.model.UsuarioModel;
 import kotlin.jvm.internal.Lambda;
 
 public class AdapterOS extends RecyclerView.Adapter<AdapterOS.MyViewHolder> {
+
     int posFotoX;
-    int posFotosY;
+    int posFotoY;
     List<Bitmap> bitmaps = new ArrayList<>();
     List<OSModel> oss;
     Activity a;
@@ -165,6 +170,7 @@ public class AdapterOS extends RecyclerView.Adapter<AdapterOS.MyViewHolder> {
     }
 
     public void gerarPdfOS(OSModel osModel){
+        int ESPACAMENTO_PADRAO = 10;
 
         Bitmap bmpTemplate = BitmapFactory.decodeResource(a.getResources(), R.raw.templaterelatorio);
         Bitmap scaledbmpTemplate = Bitmap.createScaledBitmap(bmpTemplate, 792, 1120, false);
@@ -195,37 +201,71 @@ public class AdapterOS extends RecyclerView.Adapter<AdapterOS.MyViewHolder> {
         canvas.drawText(osModel.getNumeroOs(), 264, 88, title);
         canvas.drawText(osModel.getData(), 571, 88, title);
 
-        canvas.drawText("Peças da OS: ", 120, 140, title);
+        int posClienteX = 120;
+        int posClientey = 140;
 
-        int espacamentoEntrePecas = 10;
+        canvas.drawText("Dados do cliente: ", posClienteX, posClientey, title);
+        posClientey += ESPACAMENTO_PADRAO;
 
-        int startX = 167;
-        int startY = 160;
+        for ( String linhaCliente : osModel.getUsuarioModel().toString().split("\n")){
+            posClientey += 10;
+            canvas.drawText(linhaCliente, posClienteX, posClientey, restante);
+        }
+        int posVeiculoX = posClienteX;
+        int posVeiculoY = posClientey + 20;
+
+        canvas.drawText("Dados do veículo: ", posVeiculoX, posVeiculoY, title);
+        posVeiculoY += ESPACAMENTO_PADRAO;
+
+        for ( String linhaVeiculo : osModel.getVeiculoModel().toString().split("\n")){
+            posVeiculoY += 10;
+            canvas.drawText(linhaVeiculo, posVeiculoX, posVeiculoY, restante);
+        }
+
+        int posPecasX = posVeiculoX;
+        int posPecasY = posVeiculoY + 20;
+
+        canvas.drawText("Peças da OS: ", posPecasX, posPecasY, title);
+        posPecasY += ESPACAMENTO_PADRAO;
 
         for (ItemModel item : osModel.getItens()){
-            canvas.drawText(item.toString(), startX, startY, restante);
-            startY += espacamentoEntrePecas;
+            posPecasY += 10;
+            canvas.drawText(item.toString(), posPecasX, posPecasY, restante);
         }
 
-        int posCompletoY = startY + 20;
-        canvas.drawText("Descrição completa: ", 120, posCompletoY, title);
-        posCompletoY += 20;
+        int posServicosX = posPecasX;
+        int posServicosY = posPecasY + 20;
+
+        canvas.drawText("Serviços da OS: ", posServicosX, posServicosY, title);
+        posServicosY += ESPACAMENTO_PADRAO;
+
+        for (ItemModel item : osModel.getServicos()){
+            posServicosY += 10;
+            canvas.drawText(item.toString(), posServicosX, posServicosY, restante);
+        }
+
+        int posDescricaoX = posServicosX;
+        int posDescricaoY = posServicosY + 20;
+
+        canvas.drawText("Descrição completa: ", posDescricaoX, posDescricaoY, title);
+        posDescricaoY += ESPACAMENTO_PADRAO;
+
         for ( String linhaDaOs : osModel.toString().split("\n")) {
-            posCompletoY += 10;
-            canvas.drawText(linhaDaOs, startX, posCompletoY, restante);
+            posDescricaoY += 10;
+            canvas.drawText(linhaDaOs, posDescricaoX, posDescricaoY, restante);
         }
 
-        posFotosY = posCompletoY + 20;
-        canvas.drawText("Fotos: ", 120, posFotosY, title);
-        posFotosY += 20;
-        posFotoX = 120;
+        posFotoX = posDescricaoX;
+        posFotoY = posDescricaoY + 20;
 
+        canvas.drawText("Fotos: ", 120, posFotoY, title);
+        posFotoY += ESPACAMENTO_PADRAO;
 
         new CreateBitmapTask(osModel.getFotos(), () -> {
 
             for ( Bitmap bitmap : bitmaps){
                 Bitmap resizedBitmap = Bitmap.createScaledBitmap(bitmap, 120, 120, false);
-                canvas.drawBitmap( resizedBitmap, posFotoX, posFotosY, paint);
+                canvas.drawBitmap( resizedBitmap, posFotoX, posFotoY, paint);
                 posFotoX += 130;
             }
 

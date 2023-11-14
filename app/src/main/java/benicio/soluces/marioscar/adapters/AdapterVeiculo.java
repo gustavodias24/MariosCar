@@ -54,6 +54,7 @@ public class AdapterVeiculo extends RecyclerView.Adapter<AdapterVeiculo.MyViewHo
             }
 
             assert i != null;
+            i.putExtra("idCliente", veiculoModel.getIdCliente());
             i.putExtra("idCarro", veiculoModel.getId());
             i.putExtra("placaCarro", veiculoModel.getPlaca());
 

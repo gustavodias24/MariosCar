@@ -26,7 +26,7 @@ public class ItemModel {
         if (quantidade > 0){
             quantidadeString  = " Quantidade: " + quantidade;
         }
-        return  "Produto: " + nomeProduto + "\nValor: R$" + valor + quantidadeString;
+        return  nomeProduto + "\nValor: R$" + valor + quantidadeString;
     }
 
     public String getNomeProduto() {
