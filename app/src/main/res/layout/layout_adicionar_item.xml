@@ -38,13 +38,15 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:hint="Quantidade">
+                android:hint="Quantidade"
+                android:visibility="visible">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:inputType="number|numberDecimal|numberSigned" />
+                    android:inputType="number|numberDecimal|numberSigned"
+                    android:visibility="visible" />
 
             </com.google.android.material.textfield.TextInputLayout>
 

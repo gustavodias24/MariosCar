@@ -125,4 +125,20 @@ public class UsuarioModel {
     public void setData(String data) {
         this.data = data;
     }
+
+    @Override
+    public String toString() {
+        return  "Nome: " + nome + '\n' +
+                "Nome fantasia: " + nome2 + '\n' +
+                "Rua: " + rua + '\n' +
+                "Bairro: " + bairro + '\n' +
+                "Cidade: " + cidade + '\n' +
+                "UF: " + uf + '\n' +
+                "Cep: " + cep + '\n' +
+                "Telefone: " + telefone + '\n' +
+                "Whatsapp: " + whatsapp + '\n' +
+                "Email: " + email + '\n' +
+                "Documento: " + documento + '\n' +
+                "Nascimento: " + data ;
+    }
 }

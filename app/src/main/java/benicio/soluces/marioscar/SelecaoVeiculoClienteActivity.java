@@ -10,7 +10,10 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.view.MenuItem;
+import android.view.View;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -22,6 +25,7 @@ import java.util.List;
 
 import benicio.soluces.marioscar.adapters.AdapterVeiculo;
 import benicio.soluces.marioscar.databinding.ActivitySelecaoVeiculoClienteBinding;
+import benicio.soluces.marioscar.model.UsuarioModel;
 import benicio.soluces.marioscar.model.VeiculoModel;
 
 public class SelecaoVeiculoClienteActivity extends AppCompatActivity {
@@ -33,6 +37,7 @@ public class SelecaoVeiculoClienteActivity extends AppCompatActivity {
     AdapterVeiculo adapterVeiculo;
     private List<VeiculoModel> veiculos = new ArrayList<>();
     private DatabaseReference refVeiculos = FirebaseDatabase.getInstance().getReference().getRef().child("veiculos");
+    private DatabaseReference refClientes = FirebaseDatabase.getInstance().getReference().getRef().child("clientes");
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -48,6 +53,24 @@ public class SelecaoVeiculoClienteActivity extends AppCompatActivity {
 
         configurarRecyclerView();
         configurarListener();
+
+        if ( bundle.getBoolean("exibirTodosOsDadosCliente", false)){
+            mainBinding.layoutDadosCliente.setVisibility(View.VISIBLE);
+
+            refClientes.child(bundle.getString("idCliente",  "")).get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<DataSnapshot> task) {
+                    String infosUser = "Falha ao buscar dados do usuário";
+
+                    if ( task.isSuccessful() ){
+                        UsuarioModel usuarioModel = task.getResult().getValue(UsuarioModel.class);
+                        infosUser = usuarioModel.toString();
+                    }
+
+                    mainBinding.dadosCliente.setText(infosUser);
+                }
+            });
+        }
 
     }
 

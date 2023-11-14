@@ -2,9 +2,15 @@ package benicio.soluces.marioscar.model;
 
 public class ItemModel {
     String nomeProduto;
-    float valor, quantidade;
+    float valor;
+    float quantidade = 0.0f;
 
     public ItemModel() {
+    }
+
+    public ItemModel(String nomeProduto, float valor) {
+        this.nomeProduto = nomeProduto;
+        this.valor = valor;
     }
 
     public ItemModel(String nomeProduto, float valor, float quantidade) {
@@ -15,7 +21,12 @@ public class ItemModel {
 
     @Override
     public String toString() {
-        return  "Produto: " + nomeProduto + " Valor: R$" + valor + " Quantidade: " + quantidade;
+        String quantidadeString = "";
+
+        if (quantidade > 0){
+            quantidadeString  = " Quantidade: " + quantidade;
+        }
+        return  "Produto: " + nomeProduto + "\nValor: R$" + valor + quantidadeString;
     }
 
     public String getNomeProduto() {

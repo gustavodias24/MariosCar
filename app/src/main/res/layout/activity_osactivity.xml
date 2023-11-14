@@ -41,6 +41,22 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
 
+        <Button
+            android:id="@+id/adicionar_servico"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp"
+            android:backgroundTint="@color/red"
+            android:text="Adicionar serviço"
+            android:textColor="#F8F8F8" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recycler_servicos"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" >
+
+        </androidx.recyclerview.widget.RecyclerView>
+
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/descricao_peça_field"
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
@@ -60,20 +76,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="Valor Total das peças">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="number|numberDecimal|numberSigned" />
-
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/valor_total_field"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Valor Total">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:layout_width="match_parent"
@@ -212,12 +214,13 @@
             android:orientation="horizontal"
             android:padding="8dp" />
 
-        <ImageButton
-            android:id="@+id/foto"
+        <Button
+            android:id="@+id/selecionar_foto"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:backgroundTint="@color/red"
-            android:src="@drawable/baseline_add_a_photo_24" />
+            android:text="Selecionar foto"
+            android:textColor="#F8F8F8" />
 
         <Button
             android:id="@+id/cadastrar"

@@ -59,6 +59,7 @@ public class AdapterCliente extends RecyclerView.Adapter<AdapterCliente.MyViewHo
                 case 666:
                     i = new Intent(c, SelecaoVeiculoClienteActivity.class);
                     i.putExtra("t", 666);
+                    i.putExtra("exibirTodosOsDadosCliente", true);
                     break;
             }
 

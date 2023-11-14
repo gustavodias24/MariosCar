@@ -20,6 +20,7 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -46,6 +47,7 @@ import benicio.soluces.marioscar.adapters.AdapterItens;
 import benicio.soluces.marioscar.databinding.ActivityOsactivityBinding;
 import benicio.soluces.marioscar.databinding.LayoutAdicionarItemBinding;
 import benicio.soluces.marioscar.databinding.LoadingLayoutBinding;
+import benicio.soluces.marioscar.databinding.SelectCameraOrGaleryLayoutBinding;
 import benicio.soluces.marioscar.model.ItemModel;
 import benicio.soluces.marioscar.model.OSModel;
 import benicio.soluces.marioscar.model.ResponseIngurModel;
@@ -61,12 +63,16 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 
 public class OSActivity extends AppCompatActivity {
+
+    private Dialog dialogSelecionarFoto;
+    private static final int REQUEST_IMAGE_CAPTURE = 1;
+
+    private static final int PICK_IMAGE_REQUEST = 2;
     private String id;
     Uri imageUri;
     private DatabaseReference refOs = FirebaseDatabase.getInstance().getReference().getRef().child("os");
-    private Dialog dialogCarregando, dialogAdicionarItem;
+    private Dialog dialogCarregando, dialogAdicionarItem, dialogAdicionarServico;
     private static final int PERMISSON_CODE = 1000;
-    private static final int REQUEST_IMAGE_CAPTURE = 1;
     private static final String TOKEN = "282c6d7932402b7665da78ee7c51311556ce6c8a";
     private ActivityOsactivityBinding mainBinding;
     Retrofit retrofitIngur = RetrofitUtils.createRetrofitIngur();
@@ -74,13 +80,16 @@ public class OSActivity extends AppCompatActivity {
 
     AdapterImages adapterImages;
     AdapterItens adapterItens;
+    AdapterItens adapterServicos;
     RecyclerView r;
     RecyclerView rItens;
+    RecyclerView rServicos;
     List<String> imagesLink = new ArrayList<>();
 
     private Bundle b;
 
     List<ItemModel> itens = new ArrayList<>();
+    List<ItemModel> servicos = new ArrayList<>();
 
     int numeroOs = 1;
 
@@ -99,6 +108,7 @@ public class OSActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayShowHomeEnabled(true);
 
         configurarDialogCarregando();
+        configurarDialogSelecionarFoto();
 
         if ( b.getBoolean("isEdit", false)){
             mainBinding.cadastrar.setText("Conluir a edição");
@@ -107,7 +117,6 @@ public class OSActivity extends AppCompatActivity {
                     OSModel os = task.getResult().getValue(OSModel.class);
                     mainBinding.descricaoField.getEditText().setText(os.getDescricao());
                     mainBinding.descricaoPeAField.getEditText().setText(os.getDescricaoPeca());
-                    mainBinding.valorTotalField.getEditText().setText(os.getValorTotal());
                     mainBinding.valorTotalPecasField.getEditText().setText(os.getValorTotalPecas());
                     mainBinding.valorServicoField.getEditText().setText(os.getValorService());
                     mainBinding.descontoField.getEditText().setText(os.getDesconto());
@@ -175,7 +184,7 @@ public class OSActivity extends AppCompatActivity {
 
             descricao = mainBinding.descricaoField.getEditText().getText().toString();
             descricaoPeca = mainBinding.descricaoPeAField.getEditText().getText().toString();
-            valorTotal = mainBinding.valorTotalField.getEditText().getText().toString();
+//            valorTotal = mainBinding.valorTotalField.getEditText().getText().toString();
             valorTotalPecas = mainBinding.valorTotalPecasField.getEditText().getText().toString();
             valorService = mainBinding.valorServicoField.getEditText().getText().toString();
             desconto = mainBinding.descontoField.getEditText().getText().toString();
@@ -195,7 +204,7 @@ public class OSActivity extends AppCompatActivity {
                             id,
                             idCarro,
                             descricao, descricaoPeca,
-                            valorTotal, valorService, desconto, total, obs,
+                            total, valorService, desconto, total, obs,
                             imagesLink,
                             mainBinding.bateria.isChecked(),
                             mainBinding.alarme.isChecked(),
@@ -228,17 +237,43 @@ public class OSActivity extends AppCompatActivity {
 
         });
 
-       mainBinding.foto.setOnClickListener( view -> {
-           baterFoto();
+       mainBinding.selecionarFoto.setOnClickListener( view -> {
+            dialogSelecionarFoto.show();
        });
 
        mainBinding.adicionarPeca.setOnClickListener( view -> {
            dialogAdicionarItem.show();
        });
 
+       mainBinding.adicionarServico.setOnClickListener( view -> {
+           dialogAdicionarServico.show();
+       });
+
         configurarRecyclerImages();
         configurarRecyclerItens();
+        configurarRecyclerServicos();
         configurarDialogProduto();
+        configurarDialogServico();
+    }
+
+    private void configurarDialogSelecionarFoto() {
+        AlertDialog.Builder b = new AlertDialog.Builder(OSActivity.this);
+        SelectCameraOrGaleryLayoutBinding cameraOrGalery = SelectCameraOrGaleryLayoutBinding.inflate(getLayoutInflater());
+        b.setTitle("Selecione: ");
+
+        cameraOrGalery.btnCamera.setOnClickListener( view -> {
+            baterFoto();
+            dialogSelecionarFoto.dismiss();
+        });
+
+        cameraOrGalery.btnGaleria.setOnClickListener( view -> {
+            Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+            startActivityForResult(intent, PICK_IMAGE_REQUEST);
+            dialogSelecionarFoto.dismiss();
+        });
+
+        b.setView(cameraOrGalery.getRoot());
+        dialogSelecionarFoto = b.create();
     }
 
     private void configurarRecyclerItens() {
@@ -250,9 +285,19 @@ public class OSActivity extends AppCompatActivity {
         rItens.setAdapter(adapterItens);
     }
 
+    private void configurarRecyclerServicos() {
+        rServicos = mainBinding.recyclerServicos;
+        rServicos.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
+        rServicos.setHasFixedSize(true);
+        rServicos.addItemDecoration(new DividerItemDecoration(getApplicationContext(), DividerItemDecoration.VERTICAL));
+        adapterServicos = new AdapterItens(servicos, getApplicationContext());
+        rServicos.setAdapter(adapterServicos);
+    }
+
     @SuppressLint("NotifyDataSetChanged")
     private void configurarDialogProduto(){
         AlertDialog.Builder b = new AlertDialog.Builder(OSActivity.this);
+        b.setTitle("Adicionar peça");
         LayoutAdicionarItemBinding adicionarItemBinding = LayoutAdicionarItemBinding.inflate(getLayoutInflater());
         adicionarItemBinding.adicionarPeca.setOnClickListener( view -> {
             String nomePeca = adicionarItemBinding.nomeField.getEditText().getText().toString();
@@ -274,6 +319,34 @@ public class OSActivity extends AppCompatActivity {
         });
         b.setView(adicionarItemBinding.getRoot());
         dialogAdicionarItem  = b.create();
+    }
+
+    @SuppressLint("NotifyDataSetChanged")
+    private void configurarDialogServico(){
+        AlertDialog.Builder b = new AlertDialog.Builder(OSActivity.this);
+        b.setTitle("Adicionar serviço");
+        LayoutAdicionarItemBinding adicionarItemBinding = LayoutAdicionarItemBinding.inflate(getLayoutInflater());
+
+        adicionarItemBinding.nomeField.setHint("Serviço");
+        adicionarItemBinding.valorField.setHint("Valor do serviço $");
+        adicionarItemBinding.quantiadeField.setVisibility(View.GONE);
+
+        adicionarItemBinding.adicionarPeca.setOnClickListener( view -> {
+            String nomeServico = adicionarItemBinding.nomeField.getEditText().getText().toString();
+            String precoString = adicionarItemBinding.valorField.getEditText().getText().toString();
+
+            precoString = precoString.isEmpty() ? "0.0" : precoString;
+            float  preco = Float.parseFloat(precoString);
+
+            servicos.add(new ItemModel(nomeServico, preco));
+            adapterServicos.notifyDataSetChanged();
+
+            dialogAdicionarServico.dismiss();
+            adicionarItemBinding.nomeField.getEditText().setText("");
+            adicionarItemBinding.valorField.getEditText().setText("0");
+        });
+        b.setView(adicionarItemBinding.getRoot());
+        dialogAdicionarServico  = b.create();
     }
     private void configurarDialogCarregando() {
         AlertDialog.Builder b = new AlertDialog.Builder(OSActivity.this);
@@ -318,6 +391,32 @@ public class OSActivity extends AppCompatActivity {
             dialogCarregando.show();
             File imageFile = ImageUtils.uriToFile(getApplicationContext(), imageUri);
             RequestBody description = RequestBody.create(MediaType.parse("text/plain"), "Image Description");
+            RequestBody image = RequestBody.create(MediaType.parse("image/png"), imageFile);
+            MultipartBody.Part imagePart = MultipartBody.Part.createFormData("image", imageFile.getName(), image);
+
+            serviceIngur.postarImage("Bearer " + TOKEN, description, imagePart).enqueue(new Callback<ResponseIngurModel>() {
+                @Override
+                public void onResponse(Call<ResponseIngurModel> call, Response<ResponseIngurModel> response) {
+                    if (response.isSuccessful()){
+                        assert response.body() != null;
+                        imagesLink.add(Objects.requireNonNull(response.body()).getData().getLink());
+                        adapterImages.notifyDataSetChanged();
+                        dialogCarregando.dismiss();
+
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<ResponseIngurModel> call, Throwable t) {
+                    dialogCarregando.dismiss();
+                }
+            });
+        }
+        else if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && data != null){
+            dialogCarregando.show();
+            File imageFile = ImageUtils.uriToFile(getApplicationContext(), Objects.requireNonNull(data.getData()));
+            RequestBody description = RequestBody.create(MediaType.parse("text/plain"), "Image Description");
+            assert imageFile != null;
             RequestBody image = RequestBody.create(MediaType.parse("image/png"), imageFile);
             MultipartBody.Part imagePart = MultipartBody.Part.createFormData("image", imageFile.getName(), image);
 
