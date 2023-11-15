@@ -57,18 +57,15 @@ public class SelecaoVeiculoClienteActivity extends AppCompatActivity {
         if ( bundle.getBoolean("exibirTodosOsDadosCliente", false)){
             mainBinding.layoutDadosCliente.setVisibility(View.VISIBLE);
 
-            refClientes.child(bundle.getString("idCliente",  "")).get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
-                @Override
-                public void onComplete(@NonNull Task<DataSnapshot> task) {
-                    String infosUser = "Falha ao buscar dados do usuário";
+            refClientes.child(bundle.getString("idCliente",  "")).get().addOnCompleteListener(task -> {
+                String infosUser = "Falha ao buscar dados do usuário";
 
-                    if ( task.isSuccessful() ){
-                        UsuarioModel usuarioModel = task.getResult().getValue(UsuarioModel.class);
-                        infosUser = usuarioModel.toString();
-                    }
-
-                    mainBinding.dadosCliente.setText(infosUser);
+                if ( task.isSuccessful() ){
+                    UsuarioModel usuarioModel = task.getResult().getValue(UsuarioModel.class);
+                    infosUser = usuarioModel.toString();
                 }
+
+                mainBinding.dadosCliente.setText(infosUser);
             });
         }
 

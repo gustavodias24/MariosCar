@@ -306,14 +306,25 @@ public class AdapterOS extends RecyclerView.Adapter<AdapterOS.MyViewHolder> {
         Intent intent = new Intent(Intent.ACTION_SEND);
         intent.setType("application/pdf");
         intent.putExtra(Intent.EXTRA_STREAM, contentUri);
-        intent.setPackage("com.whatsapp"); // Especifica o pacote do WhatsApp
         intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+
+        // Tenta compartilhar no WhatsApp normal
+        intent.setPackage("com.whatsapp.w4b");
+        try {
+            a.startActivity(intent);
+            return; // Se não houver exceção, o compartilhamento foi bem-sucedido
+        } catch (android.content.ActivityNotFoundException e) {
+            // WhatsApp normal não instalado, continua para o próximo bloco
+        }
+
+        // Tenta compartilhar no WhatsApp Business
+        intent.setPackage("com.whatsapp");
 
         try {
             a.startActivity(intent);
         } catch (android.content.ActivityNotFoundException ex) {
-            // WhatsApp não instalado
-            Toast.makeText(a, "WhatsApp não está instalado", Toast.LENGTH_SHORT).show();
+            // WhatsApp Business não instalado
+            Toast.makeText(a, "WhatsApp e WhatsApp Business não estão instalados", Toast.LENGTH_SHORT).show();
         }
     }
 }
