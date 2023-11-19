@@ -26,13 +26,13 @@
             android:src="@raw/logo" />
 
         <EditText
-            android:id="@+id/placa_field"
+            android:id="@+id/documento_field"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="#FFFFFF"
             android:backgroundTintMode="add"
             android:ems="10"
-            android:hint="Placa do veículo"
+            android:hint="Digite seu CPF ou CNPJ"
             android:inputType="text"
             android:padding="16dp" />
 
@@ -52,7 +52,7 @@
             android:layout_height="wrap_content"
             android:gravity="center"
             android:padding="8dp"
-            android:text="Consultar as OS do seu veículo."
+            android:text="Consultar as OS "
             android:textColor="#FFFFFF"
             android:textStyle="bold" />
 

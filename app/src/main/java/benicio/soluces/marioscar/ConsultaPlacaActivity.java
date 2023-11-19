@@ -47,7 +47,7 @@ public class ConsultaPlacaActivity extends AppCompatActivity {
         mainBinding.consultar.setOnClickListener( view -> {
             Toast.makeText(this, "Consultando...", Toast.LENGTH_SHORT).show();
             consultar(
-                    mainBinding.placaField.getText().toString()
+                    mainBinding.documentoField.getText().toString()
             );
         });
 
@@ -64,8 +64,8 @@ public class ConsultaPlacaActivity extends AppCompatActivity {
                     for ( DataSnapshot dado : snapshot.getChildren()){
                         OSModel osModel = dado.getValue(OSModel.class);
 
-                        if ( osModel != null && osModel.getPlacaCarro() != null){
-                            if (osModel.getPlacaCarro().toLowerCase().trim().equals(placa.toLowerCase().trim())){
+                        if ( osModel != null && osModel.getUsuarioModel() != null){
+                            if (osModel.getUsuarioModel().getDocumento().toLowerCase().trim().equals(placa.toLowerCase().trim())){
                                 oss.add(osModel);
                             }
                         }
