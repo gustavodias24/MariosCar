@@ -25,10 +25,11 @@ import benicio.soluces.marioscar.adapters.AdapterOS;
 import benicio.soluces.marioscar.databinding.ActivityExibidorDeOsactivityBinding;
 import benicio.soluces.marioscar.databinding.ActivitySelecaoVeiculoClienteBinding;
 import benicio.soluces.marioscar.model.OSModel;
+import benicio.soluces.marioscar.utils.DatabaseUtils;
 
 public class ExibidorDeOSActivity extends AppCompatActivity {
 
-    private DatabaseReference refOs = FirebaseDatabase.getInstance().getReference().getRef().child("os");
+    private DatabaseReference refOs = FirebaseDatabase.getInstance().getReference().getRef().child(DatabaseUtils.OS_DB);
     private ActivityExibidorDeOsactivityBinding mainBinding;
     private Bundle bundle;
     List<OSModel> listaOs = new ArrayList<>();

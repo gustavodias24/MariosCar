@@ -53,6 +53,7 @@ import benicio.soluces.marioscar.model.OSModel;
 import benicio.soluces.marioscar.model.ResponseIngurModel;
 import benicio.soluces.marioscar.model.UsuarioModel;
 import benicio.soluces.marioscar.model.VeiculoModel;
+import benicio.soluces.marioscar.utils.DatabaseUtils;
 import benicio.soluces.marioscar.utils.ImageUtils;
 import benicio.soluces.marioscar.utils.RetrofitUtils;
 import benicio.soluces.marioscar.services.ServiceIngur;
@@ -65,9 +66,9 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 
 public class OSActivity extends AppCompatActivity {
-    private DatabaseReference refClientes = FirebaseDatabase.getInstance().getReference().getRef().child("clientes");
-    private DatabaseReference refVeiculos = FirebaseDatabase.getInstance().getReference().getRef().child("veiculos");
-    private DatabaseReference refOs = FirebaseDatabase.getInstance().getReference().getRef().child("os");
+    private DatabaseReference refClientes = FirebaseDatabase.getInstance().getReference().getRef().child(DatabaseUtils.CLIENTES_DB);
+    private DatabaseReference refVeiculos = FirebaseDatabase.getInstance().getReference().getRef().child(DatabaseUtils.VEICULOS_DB);
+    private DatabaseReference refOs = FirebaseDatabase.getInstance().getReference().getRef().child(DatabaseUtils.OS_DB);
 
     private Dialog  dialogSelecionarFoto;
     private static final int REQUEST_IMAGE_CAPTURE = 1;
@@ -129,17 +130,16 @@ public class OSActivity extends AppCompatActivity {
                     itens.addAll(os.getItens());
                     adapterItens.notifyDataSetChanged();
 
-                    mainBinding.bateria.setChecked(os.getBateria());
-                    mainBinding.alarme.setChecked(os.getAlarme());
-                    mainBinding.buzina.setChecked(os.getBuzina());
-                    mainBinding.trava.setChecked(os.getTrava());
-                    mainBinding.vidro.setChecked(os.getVidro());
-                    mainBinding.tapete.setChecked(os.getTapete());
-                    mainBinding.chaveRoda.setChecked(os.getChaveRoda());
-                    mainBinding.macaco.setChecked(os.getMacaco());
-                    mainBinding.triangulo.setChecked(os.getTriangulo());
-                    mainBinding.extintor.setChecked(os.getExtintor());
-                    mainBinding.som.setChecked(os.getSom());
+                    mainBinding.cabecote.setChecked(os.getCabecote());
+                    mainBinding.mancaisCabecote.setChecked(os.getMancaisCabecote());
+                    mainBinding.comando.setChecked(os.getComando());
+                    mainBinding.gaiola.setChecked(os.getGaiola());
+                    mainBinding.vela.setChecked(os.getVela());
+                    mainBinding.bloco.setChecked(os.getBloco());
+                    mainBinding.mancaisBloco.setChecked(os.getMancaisBloco());
+                    mainBinding.virabrequim.setChecked(os.getVirabrequim());
+                    mainBinding.biela.setChecked(os.getBiela());
+                    mainBinding.motoMontado.setChecked(os.getMotorMontado());
                 }else{
                     Toast.makeText(OSActivity.this, "Erro de conexão!", Toast.LENGTH_SHORT).show();
                     finish();
@@ -204,31 +204,34 @@ public class OSActivity extends AppCompatActivity {
                             VeiculoModel veiculo = task1.getResult().getValue(VeiculoModel.class);
                             refOs.child(id).setValue(
                                     new OSModel(
-                                            veiculo,
-                                            cliente,
+                                            id,
+                                            idCarro,
                                             idCliente,
+                                            placaCarro,
+                                            descricao,
+                                            descricaoPeca,
+                                            total,
+                                            valorService,
+                                            desconto,
+                                            total,
+                                            obs,
+                                            valorTotalPecas,
+                                            imagesLink,
+                                            itens,
                                             servicos,
                                             padWithZeros(numeroOs+"" , 6),
                                             dateFormat.format(currentDate),
-                                            itens,
-                                            valorTotalPecas,
-                                            placaCarro,
-                                            id,
-                                            idCarro,
-                                            descricao, descricaoPeca,
-                                            total, valorService, desconto, total, obs,
-                                            imagesLink,
-                                            mainBinding.bateria.isChecked(),
-                                            mainBinding.alarme.isChecked(),
-                                            mainBinding.buzina.isChecked(),
-                                            mainBinding.trava.isChecked(),
-                                            mainBinding.vidro.isChecked(),
-                                            mainBinding.tapete.isChecked(),
-                                            mainBinding.chaveRoda.isChecked(),
-                                            mainBinding.macaco.isChecked(),
-                                            mainBinding.triangulo.isChecked(),
-                                            mainBinding.extintor.isChecked(),
-                                            mainBinding.som.isChecked()
+                                            mainBinding.cabecote.isChecked(),
+                                            mainBinding.mancaisCabecote.isChecked(),
+                                            mainBinding.comando.isChecked(),
+                                            mainBinding.gaiola.isChecked(),
+                                            mainBinding.vela.isChecked(),
+                                            mainBinding.bloco.isChecked(),
+                                            mainBinding.mancaisBloco.isChecked(),
+                                            mainBinding.virabrequim.isChecked(),
+                                            mainBinding.biela.isChecked(),
+                                            mainBinding.motoMontado.isChecked(),veiculo,
+                                            cliente
                                     )
                             ).addOnCompleteListener(task2 -> {
                                 if ( task.isSuccessful() ){

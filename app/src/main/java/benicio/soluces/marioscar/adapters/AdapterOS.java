@@ -282,7 +282,7 @@ public class AdapterOS extends RecyclerView.Adapter<AdapterOS.MyViewHolder> {
             File file = new File(kaizenProjetosDir, nomeArquivo);
             try {
                 pdfDocument.writeTo(new FileOutputStream(file));
-                Toast.makeText(a, "PDF salvo em Documents/MARIOSCAR", Toast.LENGTH_SHORT).show();
+                Toast.makeText(a, "PDF salvo em Documents/MARDIESEL", Toast.LENGTH_SHORT).show();
             } catch (IOException e) {
                 AlertDialog.Builder b = new AlertDialog.Builder(a);
                 b.setTitle("Aviso");

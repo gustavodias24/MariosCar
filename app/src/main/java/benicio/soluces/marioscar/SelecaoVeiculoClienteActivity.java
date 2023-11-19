@@ -27,6 +27,7 @@ import benicio.soluces.marioscar.adapters.AdapterVeiculo;
 import benicio.soluces.marioscar.databinding.ActivitySelecaoVeiculoClienteBinding;
 import benicio.soluces.marioscar.model.UsuarioModel;
 import benicio.soluces.marioscar.model.VeiculoModel;
+import benicio.soluces.marioscar.utils.DatabaseUtils;
 
 public class SelecaoVeiculoClienteActivity extends AppCompatActivity {
 
@@ -36,8 +37,8 @@ public class SelecaoVeiculoClienteActivity extends AppCompatActivity {
     private RecyclerView r;
     AdapterVeiculo adapterVeiculo;
     private List<VeiculoModel> veiculos = new ArrayList<>();
-    private DatabaseReference refVeiculos = FirebaseDatabase.getInstance().getReference().getRef().child("veiculos");
-    private DatabaseReference refClientes = FirebaseDatabase.getInstance().getReference().getRef().child("clientes");
+    private DatabaseReference refVeiculos = FirebaseDatabase.getInstance().getReference().getRef().child(DatabaseUtils.VEICULOS_DB);
+    private DatabaseReference refClientes = FirebaseDatabase.getInstance().getReference().getRef().child(DatabaseUtils.CLIENTES_DB);
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

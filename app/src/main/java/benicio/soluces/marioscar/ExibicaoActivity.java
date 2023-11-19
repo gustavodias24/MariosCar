@@ -27,12 +27,13 @@ import benicio.soluces.marioscar.databinding.ActivityClienteBinding;
 import benicio.soluces.marioscar.databinding.ActivityExibicaoBinding;
 import benicio.soluces.marioscar.model.OSModel;
 import benicio.soluces.marioscar.model.UsuarioModel;
+import benicio.soluces.marioscar.utils.DatabaseUtils;
 
 public class ExibicaoActivity extends AppCompatActivity {
 
     private ActivityExibicaoBinding mainBinding;
-    private DatabaseReference refOs = FirebaseDatabase.getInstance().getReference().getRef().child("os");
-    private DatabaseReference refClientes = FirebaseDatabase.getInstance().getReference().getRef().child("clientes");
+    private DatabaseReference refOs = FirebaseDatabase.getInstance().getReference().getRef().child(DatabaseUtils.OS_DB);
+    private DatabaseReference refClientes = FirebaseDatabase.getInstance().getReference().getRef().child(DatabaseUtils.CLIENTES_DB);
     private Bundle b;
     private RecyclerView r;
     AdapterOS adapterOS;

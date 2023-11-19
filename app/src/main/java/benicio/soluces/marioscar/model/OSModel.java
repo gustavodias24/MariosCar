@@ -13,8 +13,7 @@ public class OSModel {
 
     String numeroOs;
     String data;
-    Boolean bateria, alarme, buzina, trava, vidro, tapete, chaveRoda, macaco, triangulo,
-    extintor, som;
+    Boolean cabecote, mancaisCabecote, comando, gaiola, vela, bloco, mancaisBloco, virabrequim, biela, motorMontado;
 
     VeiculoModel veiculoModel;
     UsuarioModel usuarioModel;
@@ -22,18 +21,11 @@ public class OSModel {
     public OSModel() {
     }
 
-    public OSModel(VeiculoModel veiculoModel, UsuarioModel usuarioModel, String idCliente, List<ItemModel> servicos, String numeroOs,String data,List<ItemModel> itens, String valorTotalPecas, String placaCarro, String id, String idCarro, String descricao, String descricaoPeca, String valorTotal, String valorService, String desconto, String total, String obs, List<String> fotos, Boolean bateria, Boolean alarme, Boolean buzina, Boolean trava, Boolean vidro, Boolean tapete, Boolean chaveRoda, Boolean macaco, Boolean triangulo, Boolean extintor, Boolean som) {
-        this.veiculoModel = veiculoModel;
-        this.usuarioModel = usuarioModel;
-        this.idCliente = idCliente;
-        this.servicos = servicos;
-        this.numeroOs = numeroOs;
-        this.data = data;
-        this.itens = itens;
-        this.valorTotalPecas = valorTotalPecas;
-        this.placaCarro = placaCarro;
+    public OSModel(String id, String idCarro, String idCliente, String placaCarro, String descricao, String descricaoPeca, String valorTotal, String valorService, String desconto, String total, String obs, String valorTotalPecas, List<String> fotos, List<ItemModel> itens, List<ItemModel> servicos, String numeroOs, String data, Boolean cabecote, Boolean mancaisCabecote, Boolean comando, Boolean gaiola, Boolean vela, Boolean bloco, Boolean mancaisBloco, Boolean virabrequim, Boolean biela, Boolean motorMontado, VeiculoModel veiculoModel, UsuarioModel usuarioModel) {
         this.id = id;
         this.idCarro = idCarro;
+        this.idCliente = idCliente;
+        this.placaCarro = placaCarro;
         this.descricao = descricao;
         this.descricaoPeca = descricaoPeca;
         this.valorTotal = valorTotal;
@@ -41,18 +33,24 @@ public class OSModel {
         this.desconto = desconto;
         this.total = total;
         this.obs = obs;
+        this.valorTotalPecas = valorTotalPecas;
         this.fotos = fotos;
-        this.bateria = bateria;
-        this.alarme = alarme;
-        this.buzina = buzina;
-        this.trava = trava;
-        this.vidro = vidro;
-        this.tapete = tapete;
-        this.chaveRoda = chaveRoda;
-        this.macaco = macaco;
-        this.triangulo = triangulo;
-        this.extintor = extintor;
-        this.som = som;
+        this.itens = itens;
+        this.servicos = servicos;
+        this.numeroOs = numeroOs;
+        this.data = data;
+        this.cabecote = cabecote;
+        this.mancaisCabecote = mancaisCabecote;
+        this.comando = comando;
+        this.gaiola = gaiola;
+        this.vela = vela;
+        this.bloco = bloco;
+        this.mancaisBloco = mancaisBloco;
+        this.virabrequim = virabrequim;
+        this.biela = biela;
+        this.motorMontado = motorMontado;
+        this.veiculoModel = veiculoModel;
+        this.usuarioModel = usuarioModel;
     }
 
     @SuppressLint("DefaultLocale")
@@ -76,17 +74,16 @@ public class OSModel {
                 "Desconto: R$ " + desconto + '\n' +
                 "Total: R$ " + total + '\n' +
                 "Obs: " + obs + '\n' +
-                "\nBateria: " + (bateria ? "Sim" : "Não") +
-                "\nAlarme: " + (alarme ? "Sim" : "Não") +
-                "\nBuzina: " + (buzina ? "Sim" : "Não") +
-                "\nTrava: " + (trava ? "Sim" : "Não") +
-                "\nVidro: " + (vidro ? "Sim" : "Não") +
-                "\nTapete: " + (tapete ? "Sim" : "Não") +
-                "\nChave de Roda: " + (chaveRoda ? "Sim" : "Não") +
-                "\nMacaco: " + (macaco ? "Sim" : "Não") +
-                "\nTriângulo: " + (triangulo ? "Sim" : "Não") +
-                "\nExtintor: " + (extintor ? "Sim" : "Não") +
-                "\nSom: " + (som ? "Sim" : "Não");
+                "\nCabeçote: " + (cabecote ? "Sim" : "Não") +
+                "\nMancais do cabeçote: " + (mancaisCabecote ? "Sim" : "Não") +
+                "\nComando: " + (comando ? "Sim" : "Não") +
+                "\nGaiola: " + (gaiola ? "Sim" : "Não") +
+                "\nVela: " + (vela ? "Sim" : "Não") +
+                "\nBloco: " + (bloco ? "Sim" : "Não") +
+                "\nMancais do bloco: " + (mancaisBloco ? "Sim" : "Não") +
+                "\nVirabrequim: " + (virabrequim ? "Sim" : "Não") +
+                "\nBiela: " + (biela ? "Sim" : "Não") +
+                "\nMotor montado: " + (motorMontado ? "Sim" : "Não") ;
     }
 
     public VeiculoModel getVeiculoModel() {
@@ -241,91 +238,83 @@ public class OSModel {
         this.fotos = fotos;
     }
 
-    public Boolean getBateria() {
-        return bateria;
+    public Boolean getCabecote() {
+        return cabecote;
     }
 
-    public void setBateria(Boolean bateria) {
-        this.bateria = bateria;
+    public void setCabecote(Boolean cabecote) {
+        this.cabecote = cabecote;
     }
 
-    public Boolean getAlarme() {
-        return alarme;
+    public Boolean getMancaisCabecote() {
+        return mancaisCabecote;
     }
 
-    public void setAlarme(Boolean alarme) {
-        this.alarme = alarme;
+    public void setMancaisCabecote(Boolean mancaisCabecote) {
+        this.mancaisCabecote = mancaisCabecote;
     }
 
-    public Boolean getBuzina() {
-        return buzina;
+    public Boolean getComando() {
+        return comando;
     }
 
-    public void setBuzina(Boolean buzina) {
-        this.buzina = buzina;
+    public void setComando(Boolean comando) {
+        this.comando = comando;
     }
 
-    public Boolean getTrava() {
-        return trava;
+    public Boolean getGaiola() {
+        return gaiola;
     }
 
-    public void setTrava(Boolean trava) {
-        this.trava = trava;
+    public void setGaiola(Boolean gaiola) {
+        this.gaiola = gaiola;
     }
 
-    public Boolean getVidro() {
-        return vidro;
+    public Boolean getVela() {
+        return vela;
     }
 
-    public void setVidro(Boolean vidro) {
-        this.vidro = vidro;
+    public void setVela(Boolean vela) {
+        this.vela = vela;
     }
 
-    public Boolean getTapete() {
-        return tapete;
+    public Boolean getBloco() {
+        return bloco;
     }
 
-    public void setTapete(Boolean tapete) {
-        this.tapete = tapete;
+    public void setBloco(Boolean bloco) {
+        this.bloco = bloco;
     }
 
-    public Boolean getChaveRoda() {
-        return chaveRoda;
+    public Boolean getMancaisBloco() {
+        return mancaisBloco;
     }
 
-    public void setChaveRoda(Boolean chaveRoda) {
-        this.chaveRoda = chaveRoda;
+    public void setMancaisBloco(Boolean mancaisBloco) {
+        this.mancaisBloco = mancaisBloco;
     }
 
-    public Boolean getMacaco() {
-        return macaco;
+    public Boolean getVirabrequim() {
+        return virabrequim;
     }
 
-    public void setMacaco(Boolean macaco) {
-        this.macaco = macaco;
+    public void setVirabrequim(Boolean virabrequim) {
+        this.virabrequim = virabrequim;
     }
 
-    public Boolean getTriangulo() {
-        return triangulo;
+    public Boolean getBiela() {
+        return biela;
     }
 
-    public void setTriangulo(Boolean triangulo) {
-        this.triangulo = triangulo;
+    public void setBiela(Boolean biela) {
+        this.biela = biela;
     }
 
-    public Boolean getExtintor() {
-        return extintor;
+    public Boolean getMotorMontado() {
+        return motorMontado;
     }
 
-    public void setExtintor(Boolean extintor) {
-        this.extintor = extintor;
-    }
-
-    public Boolean getSom() {
-        return som;
-    }
-
-    public void setSom(Boolean som) {
-        this.som = som;
+    public void setMotorMontado(Boolean motorMontado) {
+        this.motorMontado = motorMontado;
     }
 }

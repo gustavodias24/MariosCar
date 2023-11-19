@@ -26,10 +26,11 @@ import benicio.soluces.marioscar.adapters.AdapterOS;
 import benicio.soluces.marioscar.databinding.ActivityConsultaPlacaBinding;
 import benicio.soluces.marioscar.databinding.ActivityMainBinding;
 import benicio.soluces.marioscar.model.OSModel;
+import benicio.soluces.marioscar.utils.DatabaseUtils;
 
 public class ConsultaPlacaActivity extends AppCompatActivity {
 
-    private DatabaseReference refOs = FirebaseDatabase.getInstance().getReference().getRef().child("os");
+    private DatabaseReference refOs = FirebaseDatabase.getInstance().getReference().getRef().child(DatabaseUtils.OS_DB);
     private ActivityConsultaPlacaBinding mainBinding;
     private List<OSModel> oss = new ArrayList<>();
     private RecyclerView r;

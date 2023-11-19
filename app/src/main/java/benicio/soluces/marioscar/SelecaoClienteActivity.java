@@ -23,11 +23,12 @@ import benicio.soluces.marioscar.adapters.AdapterCliente;
 import benicio.soluces.marioscar.databinding.ActivityClienteBinding;
 import benicio.soluces.marioscar.databinding.ActivitySelecaoClienteBinding;
 import benicio.soluces.marioscar.model.UsuarioModel;
+import benicio.soluces.marioscar.utils.DatabaseUtils;
 
 public class SelecaoClienteActivity extends AppCompatActivity {
 
     private ActivitySelecaoClienteBinding mainBinding ;
-    private DatabaseReference refClientes = FirebaseDatabase.getInstance().getReference().getRef().child("clientes");
+    private DatabaseReference refClientes = FirebaseDatabase.getInstance().getReference().getRef().child(DatabaseUtils.CLIENTES_DB);
 
     AdapterCliente adapterCliente;
     List<UsuarioModel> clientes = new ArrayList<>();
