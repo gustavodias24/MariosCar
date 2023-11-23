@@ -57,6 +57,7 @@ import benicio.soluces.marioscar.model.UsuarioModel;
 import benicio.soluces.marioscar.model.VeiculoModel;
 import benicio.soluces.marioscar.utils.DatabaseUtils;
 import benicio.soluces.marioscar.utils.ImageUtils;
+import benicio.soluces.marioscar.utils.MathUtils;
 import benicio.soluces.marioscar.utils.RetrofitUtils;
 import benicio.soluces.marioscar.services.ServiceIngur;
 import okhttp3.MediaType;
@@ -393,14 +394,30 @@ public class OSActivity extends AppCompatActivity {
             String quantidadeString = adicionarItemBinding.quantiadeField.getEditText().getText().toString();
             String precoString = adicionarItemBinding.valorField.getEditText().getText().toString();
 
-            quantidadeString = quantidadeString.isEmpty() ? "0.0" : quantidadeString;
+            quantidadeString = quantidadeString.isEmpty() ? "0" : quantidadeString;
             precoString = precoString.isEmpty() ? "0.0" : precoString;
 
-            float quantiade = Float.parseFloat(quantidadeString);
-            float  preco = Float.parseFloat(precoString);
-
-            itens.add(new ItemModel(nomePeca, preco, quantiade));
+            int quantidade = Integer.parseInt(quantidadeString);
+            ItemModel pecaModel = new ItemModel(nomePeca, precoString, quantidade);
+            itens.add(pecaModel);
             adapterItens.notifyDataSetChanged();
+
+            String valorAtual = mainBinding.valorTotalPecasField.getEditText().getText().toString().trim().replace("R$", "");
+            String valorAtualCerto = valorAtual.replace(" ", "");
+
+            if ( valorAtual.isEmpty() ){
+                mainBinding.valorTotalPecasField.getEditText().setText(pecaModel.getValorPecaMultipl());
+            }else{
+                Double valorJaTa = MathUtils.converterParaDouble(valorAtualCerto);
+                Double valorPraSomar = MathUtils.converterParaDouble(pecaModel.getValorPecaMultipl());
+                Double somaTotal = valorJaTa + valorPraSomar;
+
+                mainBinding.valorTotalPecasField.getEditText().setText(
+                        MathUtils.formatarMoeda(somaTotal)
+                );
+            }
+
+
             dialogAdicionarItem.dismiss();
             adicionarItemBinding.nomeField.setText("");
             adicionarItemBinding.quantiadeField.getEditText().setText("0");
@@ -410,7 +427,7 @@ public class OSActivity extends AppCompatActivity {
         dialogAdicionarItem  = b.create();
     }
 
-    @SuppressLint("NotifyDataSetChanged")
+    @SuppressLint({"NotifyDataSetChanged", "SetTextI18n"})
     private void configurarDialogServico(){
         AlertDialog.Builder b = new AlertDialog.Builder(OSActivity.this);
         b.setTitle("Adicionar serviço");
@@ -448,10 +465,26 @@ public class OSActivity extends AppCompatActivity {
             String precoString = adicionarItemBinding.valorField.getEditText().getText().toString();
 
             precoString = precoString.isEmpty() ? "0.0" : precoString;
-            float  preco = Float.parseFloat(precoString);
 
-            servicos.add(new ItemModel(nomeServico, preco));
+            ItemModel serviceModel = new ItemModel(nomeServico, precoString);
+
+            servicos.add(serviceModel);
             adapterServicos.notifyDataSetChanged();
+
+            String valorAtual = mainBinding.valorServicoField.getEditText().getText().toString().trim().replace("R$", "");
+            String valorAtualCerto = valorAtual.replace(" ", "");
+
+            if ( valorAtual.isEmpty() ){
+                mainBinding.valorServicoField.getEditText().setText(serviceModel.getValor());
+            }else{
+                Double valorJaTa = MathUtils.converterParaDouble(valorAtualCerto);
+                Double valorPraSomar = MathUtils.converterParaDouble(serviceModel.getValor());
+                Double somaTotal = valorJaTa + valorPraSomar;
+
+                mainBinding.valorServicoField.getEditText().setText(
+                        MathUtils.formatarMoeda(somaTotal)
+                );
+            }
 
             dialogAdicionarServico.dismiss();
             adicionarItemBinding.nomeField.setText("");

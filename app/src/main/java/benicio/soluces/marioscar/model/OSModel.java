@@ -5,6 +5,8 @@ import android.annotation.SuppressLint;
 import java.util.ArrayList;
 import java.util.List;
 
+import benicio.soluces.marioscar.utils.MathUtils;
+
 public class OSModel {
     String id, idCarro, idCliente,placaCarro, descricao, descricaoPeca, valorTotal, valorService, desconto, total,obs, valorTotalPecas;
     List<String>  fotos = new ArrayList<>();
@@ -59,16 +61,16 @@ public class OSModel {
         StringBuilder itensString = new StringBuilder("");
 
         for ( ItemModel item : itens){
-            Float valorTotal = item.getValor() * item.getQuantidade();
+            Float valorTotal = (float) (MathUtils.converterParaDouble(item.getValor()) * item.getQuantidade());
             itensString.append(
-                    String.format("%s R$ %.2f X%.2f R$%.2f", item.getNomeProduto(), item.getValor(), item.getQuantidade(), valorTotal)
+                    String.format("%s R$ %s X%.2f R$ %.2f", item.getNomeProduto(), item.getValor(), item.getQuantidade(), valorTotal)
             ).append('\n');
         }
 
         return  "Número da OS: " + numeroOs + '\n' +
                 "Data: " + data + '\n' +
-                "Descrição: " + descricao + '\n' +
-                "Descrição peça:\n" + itensString + '\n' +
+//                "Descrição: " + descricao + '\n' +
+//                "Descrição peça:\n" + itensString + '\n' +
                 "Valor total das peças: R$" + valorTotalPecas + '\n' +
                 "Valor total dos serviços: R$ " + valorService + '\n' +
                 "Desconto: R$ " + desconto + '\n' +
