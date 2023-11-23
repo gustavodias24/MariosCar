@@ -42,8 +42,7 @@
 
 
         <activity
-            android:name=".MainActivity"
-
+            android:name=".ConsultaPlacaActivity"
 
             android:exported="false" />
         <activity
@@ -75,7 +74,8 @@
             android:exported="false"
             android:theme="@style/Theme.MaterialComponents.Light.DarkActionBar" />
         <activity
-            android:name=".ConsultaPlacaActivity"
+            android:name=".MainActivity"
+
 
             android:exported="true">
             <intent-filter>

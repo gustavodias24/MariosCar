@@ -21,6 +21,8 @@ import android.provider.MediaStore;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -66,6 +68,10 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 
 public class OSActivity extends AppCompatActivity {
+
+    String idCarro ;
+    String placaCarro ;
+    String idCliente ;
     private DatabaseReference refClientes = FirebaseDatabase.getInstance().getReference().getRef().child(DatabaseUtils.CLIENTES_DB);
     private DatabaseReference refVeiculos = FirebaseDatabase.getInstance().getReference().getRef().child(DatabaseUtils.VEICULOS_DB);
     private DatabaseReference refOs = FirebaseDatabase.getInstance().getReference().getRef().child(DatabaseUtils.OS_DB);
@@ -93,7 +99,7 @@ public class OSActivity extends AppCompatActivity {
     private Bundle b;
     List<ItemModel> itens = new ArrayList<>();
     List<ItemModel> servicos = new ArrayList<>();
-    int numeroOs = 1;
+    int numeroOs = 0;
 
     @SuppressLint("SetTextI18n")
     @Override
@@ -140,6 +146,12 @@ public class OSActivity extends AppCompatActivity {
                     mainBinding.virabrequim.setChecked(os.getVirabrequim());
                     mainBinding.biela.setChecked(os.getBiela());
                     mainBinding.motoMontado.setChecked(os.getMotorMontado());
+
+                    idCarro = os.getIdCarro();
+                    idCliente = os.getIdCliente();
+                    placaCarro = os.getPlacaCarro();
+                    numeroOs = Integer.parseInt(os.getNumeroOs());
+
                 }else{
                     Toast.makeText(OSActivity.this, "Erro de conexão!", Toast.LENGTH_SHORT).show();
                     finish();
@@ -151,13 +163,16 @@ public class OSActivity extends AppCompatActivity {
         refOs.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                numeroOs = 1;
-                if ( snapshot.exists() ){
-                    for ( DataSnapshot d : snapshot.getChildren()){
-                        numeroOs++;
-                    }
+                if (numeroOs == 0){
+                    numeroOs = 1;
+                    if ( snapshot.exists() ){
+                        for ( DataSnapshot d : snapshot.getChildren()){
+                            numeroOs++;
+                        }
 
+                    }
                 }
+
             }
 
             @Override
@@ -178,9 +193,12 @@ public class OSActivity extends AppCompatActivity {
                 id = b.getString("idOS");
             }
 
-            String idCarro = b.getString("idCarro", "");
-            String placaCarro = b.getString("placaCarro", "");
-            String idCliente = b.getString("idCliente", "");
+            if ( idCliente == null && placaCarro == null && placaCarro == null){
+                 idCarro = b.getString("idCarro", "");
+                 placaCarro = b.getString("placaCarro", "");
+                 idCliente = b.getString("idCliente", "");
+            }
+
 
             String descricao, descricaoPeca, valorTotal, valorService, desconto, total, obs, valorTotalPecas;
 
@@ -200,55 +218,61 @@ public class OSActivity extends AppCompatActivity {
                 if ( task.isSuccessful() ){
                     UsuarioModel cliente = task.getResult().getValue(UsuarioModel.class);
                     refVeiculos.child(idCarro).get().addOnCompleteListener(task1 -> {
+
                         if ( task1.isSuccessful() ){
+
                             VeiculoModel veiculo = task1.getResult().getValue(VeiculoModel.class);
-                            refOs.child(id).setValue(
-                                    new OSModel(
-                                            id,
-                                            idCarro,
-                                            idCliente,
-                                            placaCarro,
-                                            descricao,
-                                            descricaoPeca,
-                                            total,
-                                            valorService,
-                                            desconto,
-                                            total,
-                                            obs,
-                                            valorTotalPecas,
-                                            imagesLink,
-                                            itens,
-                                            servicos,
-                                            padWithZeros(numeroOs+"" , 6),
-                                            dateFormat.format(currentDate),
-                                            mainBinding.cabecote.isChecked(),
-                                            mainBinding.mancaisCabecote.isChecked(),
-                                            mainBinding.comando.isChecked(),
-                                            mainBinding.gaiola.isChecked(),
-                                            mainBinding.vela.isChecked(),
-                                            mainBinding.bloco.isChecked(),
-                                            mainBinding.mancaisBloco.isChecked(),
-                                            mainBinding.virabrequim.isChecked(),
-                                            mainBinding.biela.isChecked(),
-                                            mainBinding.motoMontado.isChecked(),veiculo,
-                                            cliente
-                                    )
-                            ).addOnCompleteListener(task2 -> {
-                                if ( task.isSuccessful() ){
-                                    finish();
-                                    startActivity(new Intent(getApplicationContext(), MainActivity.class));
-                                    if ( !b.getBoolean("isEdit", false)){
-                                        Toast.makeText(getApplicationContext(), "OS cadastrada com sucesso.", Toast.LENGTH_LONG).show();
+
+                            if (cliente != null && veiculo != null){
+                                refOs.child(id).setValue(
+                                        new OSModel(
+                                                id,
+                                                idCarro,
+                                                idCliente,
+                                                placaCarro,
+                                                descricao,
+                                                descricaoPeca,
+                                                total,
+                                                valorService,
+                                                desconto,
+                                                total,
+                                                obs,
+                                                valorTotalPecas,
+                                                imagesLink,
+                                                itens,
+                                                servicos,
+                                                padWithZeros(numeroOs+"" , 6),
+                                                dateFormat.format(currentDate),
+                                                mainBinding.cabecote.isChecked(),
+                                                mainBinding.mancaisCabecote.isChecked(),
+                                                mainBinding.comando.isChecked(),
+                                                mainBinding.gaiola.isChecked(),
+                                                mainBinding.vela.isChecked(),
+                                                mainBinding.bloco.isChecked(),
+                                                mainBinding.mancaisBloco.isChecked(),
+                                                mainBinding.virabrequim.isChecked(),
+                                                mainBinding.biela.isChecked(),
+                                                mainBinding.motoMontado.isChecked(),veiculo,
+                                                cliente
+                                        )
+                                ).addOnCompleteListener(task2 -> {
+                                    if ( task2.isSuccessful() ){
+                                        finish();
+                                        startActivity(new Intent(getApplicationContext(), MainActivity.class));
+                                        if ( !b.getBoolean("isEdit", false)){
+                                            Toast.makeText(getApplicationContext(), "OS cadastrada com sucesso.", Toast.LENGTH_LONG).show();
+                                        }else{
+                                            Toast.makeText(getApplicationContext(), "OS atualizada com sucesso.", Toast.LENGTH_LONG).show();
+                                        }
                                     }else{
-                                        Toast.makeText(getApplicationContext(), "OS atualizada com sucesso.", Toast.LENGTH_LONG).show();
+                                        Toast.makeText(getApplicationContext(), "Erro de conexão, tente novamente.", Toast.LENGTH_LONG).show();
+                                        dialogCarregando.dismiss();
                                     }
-                                }else{
-                                    Log.d("firebaseBucetinha", "onDataChange: " + task.getException().getMessage());
-                                    Log.d("firebaseBucetinha", "onDataChange: " + task.getException().getCause());
-                                    Toast.makeText(getApplicationContext(), "Erro de conexão, tente novamente.", Toast.LENGTH_LONG).show();
-                                    dialogCarregando.dismiss();
-                                }
-                            });
+                                });
+                            }else{
+                                Toast.makeText(this, "Tente novamente...", Toast.LENGTH_SHORT).show();
+                            }
+
                         }else{
                             Toast.makeText(OSActivity.this, "Problema de conexão", Toast.LENGTH_SHORT).show();
                         }
@@ -321,8 +345,51 @@ public class OSActivity extends AppCompatActivity {
         AlertDialog.Builder b = new AlertDialog.Builder(OSActivity.this);
         b.setTitle("Adicionar peça");
         LayoutAdicionarItemBinding adicionarItemBinding = LayoutAdicionarItemBinding.inflate(getLayoutInflater());
+
+        String[] pecasComplete = {
+                "Válvula de escape",
+                "Válvula de admissão",
+                "Retentor de válvula",
+                "Guia de válvula",
+                "Sede de válvula",
+                "Camisa de cilindro",
+                "Bucha de Biela",
+                "Bucha do comando do Bloco",
+                "Biela",
+                "Cabeçote",
+                "Virabrequim",
+                "Comando de válvula",
+                "Bloco",
+                "Jogo de junta completo com retentor",
+                "Jogo de pistão",
+                "Casquilho de chumaceira",
+                "Casquilho de biela",
+                "Bomba de óleo",
+                "Bomba d água",
+                "Kit correia dentada",
+                "Silicone",
+                "Limpa contato",
+                "Descarbonizante",
+                "Jogo de parafuso do cabeçote"
+        };
+
+
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_dropdown_item_1line, pecasComplete);
+
+        adicionarItemBinding.nomeField.setAdapter(adapter);
+
+        adicionarItemBinding.nomeField.setOnClickListener( view -> adicionarItemBinding.nomeField.showDropDown());
+
+        adicionarItemBinding.nomeField.setOnItemClickListener((parent, view, position, id) -> {
+            String selectedFrase = (String) parent.getItemAtPosition(position);
+            adicionarItemBinding.nomeField.setText(selectedFrase);
+
+            // Você pode fazer qualquer coisa com a frase selecionada aqui
+            Toast.makeText(getApplicationContext(),  selectedFrase + " selecionado!", Toast.LENGTH_SHORT).show();
+        });
+
         adicionarItemBinding.adicionarPeca.setOnClickListener( view -> {
-            String nomePeca = adicionarItemBinding.nomeField.getEditText().getText().toString();
+            String nomePeca = adicionarItemBinding.nomeField.getText().toString();
             String quantidadeString = adicionarItemBinding.quantiadeField.getEditText().getText().toString();
             String precoString = adicionarItemBinding.valorField.getEditText().getText().toString();
 
@@ -335,7 +402,7 @@ public class OSActivity extends AppCompatActivity {
             itens.add(new ItemModel(nomePeca, preco, quantiade));
             adapterItens.notifyDataSetChanged();
             dialogAdicionarItem.dismiss();
-            adicionarItemBinding.nomeField.getEditText().setText("");
+            adicionarItemBinding.nomeField.setText("");
             adicionarItemBinding.quantiadeField.getEditText().setText("0");
             adicionarItemBinding.valorField.getEditText().setText("0");
         });
@@ -353,8 +420,31 @@ public class OSActivity extends AppCompatActivity {
         adicionarItemBinding.valorField.setHint("Valor do serviço $");
         adicionarItemBinding.quantiadeField.setVisibility(View.GONE);
 
+        String[] servicosComplete = {"Teste hidrostático", "Plaina a face do bloco", "Plaina a face do Cabeçote",
+                "Esmerilhar Válvula", "Retificar sede", "Retificar válvula", "Trocar guia de válvula",
+                "Bronquea Guia", "Retificar virabrequim", "Retificar cilindro", "Encamisar Cilindro",
+                "Polir Comando", "Polir Virabrequim", "Rebaixa pistão", "Embuchar Biela",
+                "Retificar ferro de biela", "Limpeza Química do Motor", "Limpeza Química do cabeçote",
+                "Limpeza Química do bloco", "Desmontagem e montagem do motor", "Encher furo com solda",
+                "Recuperação da lateral do cabeçote", "Alinhar Mancais", "Projeção das camisas",
+                "Extrair parafuso", "Reabrir rosca do parafuso"};
+
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_dropdown_item_1line, servicosComplete);
+
+        adicionarItemBinding.nomeField.setAdapter(adapter);
+
+        adicionarItemBinding.nomeField.setOnClickListener( view -> adicionarItemBinding.nomeField.showDropDown());
+        adicionarItemBinding.nomeField.setOnItemClickListener((parent, view, position, id) -> {
+
+            String selectedFrase = (String) parent.getItemAtPosition(position);
+            adicionarItemBinding.nomeField.setText(selectedFrase);
+
+            // Você pode fazer qualquer coisa com a frase selecionada aqui
+            Toast.makeText(getApplicationContext(),  selectedFrase + " selecionado!", Toast.LENGTH_SHORT).show();
+        });
+
         adicionarItemBinding.adicionarPeca.setOnClickListener( view -> {
-            String nomeServico = adicionarItemBinding.nomeField.getEditText().getText().toString();
+            String nomeServico = adicionarItemBinding.nomeField.getText().toString();
             String precoString = adicionarItemBinding.valorField.getEditText().getText().toString();
 
             precoString = precoString.isEmpty() ? "0.0" : precoString;
@@ -364,7 +454,7 @@ public class OSActivity extends AppCompatActivity {
             adapterServicos.notifyDataSetChanged();
 
             dialogAdicionarServico.dismiss();
-            adicionarItemBinding.nomeField.getEditText().setText("");
+            adicionarItemBinding.nomeField.setText("");
             adicionarItemBinding.valorField.getEditText().setText("0");
         });
         b.setView(adicionarItemBinding.getRoot());
