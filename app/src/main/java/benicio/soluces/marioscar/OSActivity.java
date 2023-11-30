@@ -136,6 +136,8 @@ public class OSActivity extends AppCompatActivity {
                     adapterImages.notifyDataSetChanged();
                     itens.addAll(os.getItens());
                     adapterItens.notifyDataSetChanged();
+                    servicos.addAll(os.getServicos());
+                    adapterServicos.notifyDataSetChanged();
 
                     mainBinding.cabecote.setChecked(os.getCabecote());
                     mainBinding.mancaisCabecote.setChecked(os.getMancaisCabecote());
