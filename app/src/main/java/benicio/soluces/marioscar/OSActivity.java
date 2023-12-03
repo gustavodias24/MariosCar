@@ -12,6 +12,7 @@ import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.ContentValues;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
@@ -102,6 +103,10 @@ public class OSActivity extends AppCompatActivity {
     List<ItemModel> servicos = new ArrayList<>();
     int numeroOs = 0;
 
+
+    String totalPecaString, totalServicoString, descontoString;
+    Dialog dfm;
+
     @SuppressLint("SetTextI18n")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -163,7 +168,7 @@ public class OSActivity extends AppCompatActivity {
 
         }
 
-        refOs.addListenerForSingleValueEvent(new ValueEventListener() {
+       refOs.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (numeroOs == 0){
@@ -296,6 +301,35 @@ public class OSActivity extends AppCompatActivity {
 
        mainBinding.adicionarServico.setOnClickListener( view -> {
            dialogAdicionarServico.show();
+       });
+
+       mainBinding.calculoResulado.setOnClickListener( view -> {
+           AlertDialog.Builder b = new AlertDialog.Builder(this);
+           b.setTitle("Confirme");
+
+           totalPecaString = mainBinding.valorTotalPecasField.getEditText().getText().toString();
+           totalServicoString = mainBinding.valorServicoField.getEditText().getText().toString();
+           descontoString = mainBinding.descontoField.getEditText().getText().toString();
+
+           if ( totalPecaString.isEmpty() ){ totalPecaString = "0"; }
+           if ( totalServicoString.isEmpty() ){ totalServicoString = "0"; }
+           if ( descontoString.isEmpty() ){ descontoString = "0"; }
+
+           b.setMessage(String.format(" R$ %s + R$ %s - R$ %s", totalPecaString, totalServicoString, descontoString));
+           b.setNegativeButton("Cancelar", null);
+           b.setPositiveButton("Confirmar", (dialogInterface, i) -> {
+
+               Double resultado = MathUtils.converterParaDouble(totalPecaString) + MathUtils.converterParaDouble(totalServicoString) - MathUtils.converterParaDouble(descontoString);
+
+               String resultadoFormatado = MathUtils.formatarMoeda(resultado);
+
+               mainBinding.totalField.getEditText().setText(resultadoFormatado);
+               Toast.makeText(this, "Resultado total: " + resultadoFormatado, Toast.LENGTH_SHORT).show();
+               dfm.dismiss();
+           });
+
+           dfm = b.create();
+           dfm.show();
        });
 
         configurarRecyclerImages();

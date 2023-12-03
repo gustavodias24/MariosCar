@@ -115,7 +115,9 @@ public class ExibicaoActivity extends AppCompatActivity {
                     listaOs.clear();
                     for( DataSnapshot dado : snapshot.getChildren()){
                         OSModel osModel = dado.getValue(OSModel.class);
-                        listaOs.add(osModel);
+                        if ( !osModel.getDeletado() ){
+                            listaOs.add(osModel);
+                        }
                     }
                     adapterOS.notifyDataSetChanged();
                 }

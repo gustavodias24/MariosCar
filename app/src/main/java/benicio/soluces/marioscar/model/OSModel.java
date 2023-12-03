@@ -8,6 +8,8 @@ import java.util.List;
 import benicio.soluces.marioscar.utils.MathUtils;
 
 public class OSModel {
+
+    Boolean deletado = false;
     String id, idCarro, idCliente,placaCarro, descricao, descricaoPeca, valorTotal, valorService, desconto, total,obs, valorTotalPecas;
     List<String>  fotos = new ArrayList<>();
     List<ItemModel> itens = new ArrayList<>();
@@ -53,6 +55,14 @@ public class OSModel {
         this.motorMontado = motorMontado;
         this.veiculoModel = veiculoModel;
         this.usuarioModel = usuarioModel;
+    }
+
+    public Boolean getDeletado() {
+        return deletado;
+    }
+
+    public void setDeletado(Boolean deletado) {
+        this.deletado = deletado;
     }
 
     @SuppressLint("DefaultLocale")
