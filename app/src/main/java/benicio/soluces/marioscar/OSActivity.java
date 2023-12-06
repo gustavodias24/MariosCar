@@ -364,7 +364,7 @@ public class OSActivity extends AppCompatActivity {
         rItens.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
         rItens.setHasFixedSize(true);
         rItens.addItemDecoration(new DividerItemDecoration(getApplicationContext(), DividerItemDecoration.VERTICAL));
-        adapterItens = new AdapterItens(itens, getApplicationContext());
+        adapterItens = new AdapterItens(itens, getApplicationContext(), mainBinding.valorTotalPecasField);
         rItens.setAdapter(adapterItens);
     }
 
@@ -373,7 +373,7 @@ public class OSActivity extends AppCompatActivity {
         rServicos.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
         rServicos.setHasFixedSize(true);
         rServicos.addItemDecoration(new DividerItemDecoration(getApplicationContext(), DividerItemDecoration.VERTICAL));
-        adapterServicos = new AdapterItens(servicos, getApplicationContext());
+        adapterServicos = new AdapterItens(servicos, getApplicationContext(), mainBinding.valorServicoField);
         rServicos.setAdapter(adapterServicos);
     }
 
