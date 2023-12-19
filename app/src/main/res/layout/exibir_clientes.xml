@@ -3,16 +3,43 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="8dp"
-    android:background="@drawable/borda">
+    android:background="@drawable/borda"
+    android:orientation="vertical"
+    android:padding="8dp">
 
     <TextView
         android:id="@+id/infos_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_gravity="center"
         android:layout_weight="1"
         android:gravity="center"
         android:padding="16dp"
         android:text="TextView"
         android:textColor="#070707"
         android:textSize="20sp" />
+
+    <LinearLayout
+        android:id="@+id/layout_admin_cliente_veiculo"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:orientation="vertical">
+
+        <Button
+            android:id="@+id/editar_btn_veiculo_cliente"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:backgroundTint="#FF9800"
+            android:text="editar"
+            android:textAllCaps="true" />
+
+        <Button
+            android:id="@+id/excluir_btn_veiculo_cliente"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:backgroundTint="#FF0000"
+            android:text="excluir"
+            android:textAllCaps="true" />
+    </LinearLayout>
 </LinearLayout>

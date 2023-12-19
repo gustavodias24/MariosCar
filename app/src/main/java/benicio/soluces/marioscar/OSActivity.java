@@ -21,6 +21,8 @@ import android.provider.MediaStore;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ArrayAdapter;
+import android.widget.EditText;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -54,6 +56,7 @@ import benicio.soluces.marioscar.model.ResponseIngurModel;
 import benicio.soluces.marioscar.model.UsuarioModel;
 import benicio.soluces.marioscar.model.VeiculoModel;
 import benicio.soluces.marioscar.utils.ImageUtils;
+import benicio.soluces.marioscar.utils.MathUtils;
 import benicio.soluces.marioscar.utils.RetrofitUtils;
 import benicio.soluces.marioscar.services.ServiceIngur;
 import okhttp3.MediaType;
@@ -92,7 +95,10 @@ public class OSActivity extends AppCompatActivity {
     private Bundle b;
     List<ItemModel> itens = new ArrayList<>();
     List<ItemModel> servicos = new ArrayList<>();
-    int numeroOs = 1;
+    int numeroOs = 0;
+    String idCarro ;
+    String placaCarro ;
+    String idCliente ;
 
     @SuppressLint("SetTextI18n")
     @Override
@@ -140,6 +146,11 @@ public class OSActivity extends AppCompatActivity {
                     mainBinding.triangulo.setChecked(os.getTriangulo());
                     mainBinding.extintor.setChecked(os.getExtintor());
                     mainBinding.som.setChecked(os.getSom());
+
+                    idCarro = os.getIdCarro();
+                    idCliente = os.getIdCliente();
+                    placaCarro = os.getPlacaCarro();
+                    numeroOs = Integer.parseInt(os.getNumeroOs());
                 }else{
                     Toast.makeText(OSActivity.this, "Erro de conexão!", Toast.LENGTH_SHORT).show();
                     finish();
@@ -151,12 +162,14 @@ public class OSActivity extends AppCompatActivity {
         refOs.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                numeroOs = 1;
-                if ( snapshot.exists() ){
-                    for ( DataSnapshot d : snapshot.getChildren()){
-                        numeroOs++;
-                    }
+                if (numeroOs == 0){
+                    numeroOs = 1;
+                    if ( snapshot.exists() ){
+                        for ( DataSnapshot d : snapshot.getChildren()){
+                            numeroOs++;
+                        }
 
+                    }
                 }
             }
 
@@ -268,6 +281,37 @@ public class OSActivity extends AppCompatActivity {
            dialogAdicionarServico.show();
        });
 
+       mainBinding.btnCalcularTudo.setOnClickListener( view -> {
+           Double desconto,valorServico, valorPeca;
+
+           try{
+               desconto = Double.parseDouble(mainBinding.descontoField.getEditText().getText().toString().replace("R$", "").replace(" ", ""));
+
+           }catch (Exception e){
+               desconto = 0.0;
+           }
+
+           try{
+               valorServico = Double.parseDouble(mainBinding.valorServicoField.getEditText().getText().toString().replace("R$", "").replace(" ", ""));
+
+           }catch (Exception e){
+               valorServico = 0.0;
+           }
+
+           try{
+               valorPeca = Double.parseDouble(mainBinding.valorTotalPecasField.getEditText().getText().toString().replace("R$", "").replace(" ", ""));
+
+           }catch (Exception e){
+                valorPeca =0.0;
+           }
+
+           Double precoCalculado = (valorServico + valorPeca) - desconto;
+
+           mainBinding.totalField.getEditText().setText(
+                   precoCalculado + ""
+           );
+       });
+
         configurarRecyclerImages();
         configurarRecyclerItens();
         configurarRecyclerServicos();
@@ -300,7 +344,7 @@ public class OSActivity extends AppCompatActivity {
         rItens.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
         rItens.setHasFixedSize(true);
         rItens.addItemDecoration(new DividerItemDecoration(getApplicationContext(), DividerItemDecoration.VERTICAL));
-        adapterItens = new AdapterItens(itens, getApplicationContext());
+        adapterItens = new AdapterItens(itens, getApplicationContext(), mainBinding.valorTotalPecasField.getEditText(), false);
         rItens.setAdapter(adapterItens);
     }
 
@@ -309,30 +353,97 @@ public class OSActivity extends AppCompatActivity {
         rServicos.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
         rServicos.setHasFixedSize(true);
         rServicos.addItemDecoration(new DividerItemDecoration(getApplicationContext(), DividerItemDecoration.VERTICAL));
-        adapterServicos = new AdapterItens(servicos, getApplicationContext());
+        adapterServicos = new AdapterItens(servicos, getApplicationContext(), mainBinding.valorServicoField.getEditText(), true);
         rServicos.setAdapter(adapterServicos);
     }
 
-    @SuppressLint("NotifyDataSetChanged")
+    @SuppressLint("SetTextI18n")
+    public  void calcularValor(EditText editValorExistente, float novoValor){
+        String valorAtual = editValorExistente.getText().toString().trim().replace("R$", "").replace(" ", "");
+
+        if ( valorAtual.isEmpty() ){
+            editValorExistente.setText(novoValor + "");
+        }else{
+            float somaTotal = Float.parseFloat(valorAtual) + novoValor;
+            editValorExistente.setText(
+                    somaTotal + ""
+            );
+        }
+    }
+
+    @SuppressLint({"NotifyDataSetChanged", "SetTextI18n"})
     private void configurarDialogProduto(){
         AlertDialog.Builder b = new AlertDialog.Builder(OSActivity.this);
         b.setTitle("Adicionar peça");
         LayoutAdicionarItemBinding adicionarItemBinding = LayoutAdicionarItemBinding.inflate(getLayoutInflater());
+
+        String[] pecasComplete = {
+                "Bomba de óleo", "Bomba d água", "Filtro lubrificante", "Filtro de ar",
+                "Filtro de combustível", "Filtro de cabine", "Óleo Lubrificante",
+                "Kit correia dentada", "Correia poliv", "Polia do alternador", "Junta da tampa de válvula",
+                "Junta de escp", "Junta de admissão", "Jogo de junta superior", "Jogo de junta completo",
+                "Retentor do comando", "Retentor do volante", "Silicone Alta temperatura", "Retentor da polia",
+                "Câmara d água", "Anti chama", "Reservatório de água", "Aditivo concentrado",
+                "Água destilada", "Desengripante", "Descarbonizante", "Jogo de pistão",
+                "Jogo de bronze de biela", "Jogo de bronze de chumaceira", "Jogo de seguimento",
+                "Base do motor", "Base da caixa de marcha", "Cano d água", "Válvula termostática",
+                "Cola juntas", "Amortecedor dianteiro", "Amortecedor traseiro", "Kit coxim dianteiro",
+                "Coxim dianteiro", "Kit batedor dianteiro", "Coxim traseiro", "Batedor traseiro",
+                "Bieleta", "Pivô de suspensão", "Terminal", "Braço de direção", "Bucha da estabilizadora",
+                "Bucha da sapata", "Barra tensora", "Suporte da barra tensora", "Jogo de cabo de vela",
+                "Jogo de vela", "Jogo de pastilhas", "Jogo de disco", "Kit embreagem", "Atuador do pedal",
+                "Atuador da caixa", "Caixa de direção", "Lâmpada"
+        };
+
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_dropdown_item_1line, pecasComplete);
+
+        adicionarItemBinding.nomeField.setAdapter(adapter);
+
+        adicionarItemBinding.nomeField.setOnClickListener( view -> adicionarItemBinding.nomeField.showDropDown());
+
+        adicionarItemBinding.nomeField.setOnItemClickListener((parent, view, position, id) -> {
+            String selectedFrase = (String) parent.getItemAtPosition(position);
+            adicionarItemBinding.nomeField.setText(selectedFrase);
+
+            // Você pode fazer qualquer coisa com a frase selecionada aqui
+            Toast.makeText(getApplicationContext(),  selectedFrase + " selecionado!", Toast.LENGTH_SHORT).show();
+        });
+
         adicionarItemBinding.adicionarPeca.setOnClickListener( view -> {
-            String nomePeca = adicionarItemBinding.nomeField.getEditText().getText().toString();
+            String nomePeca = adicionarItemBinding.nomeField.getText().toString();
             String quantidadeString = adicionarItemBinding.quantiadeField.getEditText().getText().toString();
             String precoString = adicionarItemBinding.valorField.getEditText().getText().toString();
+
+
+
 
             quantidadeString = quantidadeString.isEmpty() ? "0.0" : quantidadeString;
             precoString = precoString.isEmpty() ? "0.0" : precoString;
 
             float quantiade = Float.parseFloat(quantidadeString);
             float  preco = Float.parseFloat(precoString);
+            ItemModel pecaModel = new ItemModel(nomePeca, preco, quantiade);
 
-            itens.add(new ItemModel(nomePeca, preco, quantiade));
+            calcularValor(
+                    Objects.requireNonNull(mainBinding.valorTotalPecasField.getEditText()),
+                    pecaModel.getValorPecaMultipl()
+            );
+//            String valorAtual = mainBinding.valorTotalPecasField.getEditText().getText().toString().trim().replace("R$", "");
+//            String valorAtualCerto = valorAtual.replace(" ", "");
+//
+//            if ( valorAtual.isEmpty() ){
+//                mainBinding.valorTotalPecasField.getEditText().setText(pecaModel.getValorPecaMultipl() + "");
+//            }else{
+//                float somaTotal = Float.parseFloat(valorAtualCerto) + pecaModel.getValorPecaMultipl();
+//                mainBinding.valorTotalPecasField.getEditText().setText(
+//                        somaTotal + ""
+//                );
+//            }
+
+            itens.add(pecaModel);
             adapterItens.notifyDataSetChanged();
             dialogAdicionarItem.dismiss();
-            adicionarItemBinding.nomeField.getEditText().setText("");
+            adicionarItemBinding.nomeField.setText("");
             adicionarItemBinding.quantiadeField.getEditText().setText("0");
             adicionarItemBinding.valorField.getEditText().setText("0");
         });
@@ -340,28 +451,107 @@ public class OSActivity extends AppCompatActivity {
         dialogAdicionarItem  = b.create();
     }
 
-    @SuppressLint("NotifyDataSetChanged")
+    @SuppressLint({"NotifyDataSetChanged", "SetTextI18n"})
     private void configurarDialogServico(){
         AlertDialog.Builder b = new AlertDialog.Builder(OSActivity.this);
         b.setTitle("Adicionar serviço");
         LayoutAdicionarItemBinding adicionarItemBinding = LayoutAdicionarItemBinding.inflate(getLayoutInflater());
+
+
+        String[] servicosComplete = {
+                "Remoção e instalação do Cabeçote",
+                "Remoção e instalação do motor",
+                "Remoção, Desmontagem, Montagem e instalação do Motor",
+                "Remoção e instalação do amortecedor",
+                "Remoção e instalação do coxim",
+                "Remoção e instalação do kit batedor",
+                "Remoção e instalação da bieleta",
+                "Remoção e instalação do pivô",
+                "Remoção e instalação dos braços de direção",
+                "Remoção e instalação do terminal",
+                "Remoção e instalação da bucha da sapata",
+                "Remoção e instalação da bucha estabilizadora",
+                "Remoção e instalação das pastilhas de freio",
+                "Remoção e instalação de Disco e pastilhas",
+                "Remoção e instalação da correia dentada",
+                "Remoção e instalação da carreia do alternador",
+                "Remoção e instalação da bomba d água",
+                "Remoção e instalação da tampa de válvula",
+                "Remoção e instalação do tanque de combustível",
+                "Remoção e instalação da bomba, bico injetor",
+                "Limpeza do Raill e do sistema de combustível",
+                "Remoção e instalação da câmara d água",
+                "Remoção e instalação do rolamento dianteiro",
+                "Remoção e instalação do rolamento traseiro",
+                "Remoção e instalação da junta homocinética",
+                "Injeção eletrônica Completa",
+                "Remoção e instalação do bico injetor",
+                "Remoção e instalação do cilindro mestre",
+                "Remoção e instalação do kit de embreagem",
+                "Remoção e instalação do carter",
+                "Limpeza do sistema de freio",
+                "Limpeza do sistema hidráulico",
+                "Limpeza do sistema de arrefecimento",
+                "Remoção e instalação do trocador de calor",
+                "Remoção e instalação da caixa de direção",
+                "Remoção e instalação da caixa de marcha",
+                "Remoção e instalação da alavanca",
+                "Remoção e instalação da base do motor",
+                "Remoção e instalação da bucha do feixo de mola",
+                "Arquivamento de mola"
+        };
+
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_dropdown_item_1line, servicosComplete);
+
+        adicionarItemBinding.nomeField.setAdapter(adapter);
+
+        adicionarItemBinding.nomeField.setOnClickListener( view -> adicionarItemBinding.nomeField.showDropDown());
+        adicionarItemBinding.nomeField.setOnItemClickListener((parent, view, position, id) -> {
+
+            String selectedFrase = (String) parent.getItemAtPosition(position);
+            adicionarItemBinding.nomeField.setText(selectedFrase);
+
+            // Você pode fazer qualquer coisa com a frase selecionada aqui
+            Toast.makeText(getApplicationContext(),  selectedFrase + " selecionado!", Toast.LENGTH_SHORT).show();
+        });
+
 
         adicionarItemBinding.nomeField.setHint("Serviço");
         adicionarItemBinding.valorField.setHint("Valor do serviço $");
         adicionarItemBinding.quantiadeField.setVisibility(View.GONE);
 
         adicionarItemBinding.adicionarPeca.setOnClickListener( view -> {
-            String nomeServico = adicionarItemBinding.nomeField.getEditText().getText().toString();
+            String nomeServico = adicionarItemBinding.nomeField.getText().toString();
             String precoString = adicionarItemBinding.valorField.getEditText().getText().toString();
 
             precoString = precoString.isEmpty() ? "0.0" : precoString;
             float  preco = Float.parseFloat(precoString);
 
-            servicos.add(new ItemModel(nomeServico, preco));
+            ItemModel serviceModel = new ItemModel(nomeServico, preco);
+
+            calcularValor(
+                    Objects.requireNonNull(mainBinding.valorServicoField.getEditText()),
+                    serviceModel.getValor()
+            );
+
+//            String valorAtual = mainBinding.valorServicoField.getEditText().getText().toString().trim().replace("R$", "");
+//            String valorAtualCerto = valorAtual.replace(" ", "");
+//
+//            if ( valorAtual.isEmpty() ){
+//                mainBinding.valorServicoField.getEditText().setText(serviceModel.getValor() + "");
+//            }else{
+//                float somaTotal = Float.parseFloat(valorAtualCerto) + serviceModel.getValor();
+//
+//                mainBinding.valorServicoField.getEditText().setText(
+//                        somaTotal + ""
+//                );
+//            }
+
+            servicos.add(serviceModel);
             adapterServicos.notifyDataSetChanged();
 
             dialogAdicionarServico.dismiss();
-            adicionarItemBinding.nomeField.getEditText().setText("");
+            adicionarItemBinding.nomeField.setText("");
             adicionarItemBinding.valorField.getEditText().setText("0");
         });
         b.setView(adicionarItemBinding.getRoot());

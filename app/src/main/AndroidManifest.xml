@@ -27,6 +27,15 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.MariosCar"
         tools:targetApi="31">
+        <activity
+            android:name=".EditarVeiculoActivity"
+            android:exported="false"
+            android:theme="@style/Theme.MaterialComponents.Light.DarkActionBar"
+            />
+        <activity
+            android:name=".EditarClienteActivity"
+            android:exported="false"
+            android:theme="@style/Theme.MaterialComponents.Light.DarkActionBar" />
 
         <provider
             android:name="androidx.core.content.FileProvider"
@@ -38,10 +47,8 @@
                 android:resource="@xml/file_paths" />
         </provider>
 
-
         <activity
             android:name=".ConsultaPlacaActivity"
-
             android:exported="false" />
         <activity
             android:name=".ExibidorDeOSActivity"
@@ -73,8 +80,6 @@
             android:theme="@style/Theme.MaterialComponents.Light.DarkActionBar" />
         <activity
             android:name=".MainActivity"
-
-
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

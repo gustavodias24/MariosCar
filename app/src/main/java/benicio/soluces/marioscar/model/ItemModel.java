@@ -1,5 +1,9 @@
 package benicio.soluces.marioscar.model;
 
+import android.util.Log;
+
+import benicio.soluces.marioscar.utils.MathUtils;
+
 public class ItemModel {
     String nomeProduto;
     float valor;
@@ -13,6 +17,9 @@ public class ItemModel {
         this.valor = valor;
     }
 
+    public float getValorPecaMultipl(){
+        return  valor * quantidade;
+    }
     public ItemModel(String nomeProduto, float valor, float quantidade) {
         this.nomeProduto = nomeProduto;
         this.valor = valor;
@@ -24,9 +31,9 @@ public class ItemModel {
         String quantidadeString = "";
 
         if (quantidade > 0){
-            quantidadeString  = " Quantidade: " + quantidade;
+            quantidadeString  = MathUtils.padWithZeros((int) quantidade + "", 2) ;
         }
-        return  nomeProduto + "\nValor: R$" + valor + quantidadeString;
+        return  quantidadeString + " " + nomeProduto + "\nValor: R$" + valor;
     }
 
     public String getNomeProduto() {

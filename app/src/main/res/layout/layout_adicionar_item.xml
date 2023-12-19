@@ -14,18 +14,13 @@
         android:padding="8dp"
         tools:context=".OSActivity">
 
-        <com.google.android.material.textfield.TextInputLayout
+        <AutoCompleteTextView
             android:id="@+id/nome_field"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Peça">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
-
-        </com.google.android.material.textfield.TextInputLayout>
+            android:background="@drawable/borda"
+            android:hint="Peça"
+            android:padding="16dp" />
 
         <LinearLayout
             android:layout_width="match_parent"

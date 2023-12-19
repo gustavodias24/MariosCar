@@ -126,6 +126,16 @@
 
         </com.google.android.material.textfield.TextInputLayout>
 
+        <Button
+            android:id="@+id/btn_calcular_tudo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp"
+            android:layout_weight="1"
+            android:backgroundTint="@color/red"
+            android:text="Calcular tudo"
+            android:textColor="#F8F8F8" />
+
         <CheckBox
             android:id="@+id/bateria"
             android:layout_width="match_parent"
