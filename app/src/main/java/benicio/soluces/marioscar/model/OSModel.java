@@ -68,20 +68,35 @@ public class OSModel {
     @SuppressLint("DefaultLocale")
     @Override
     public String toString() {
-        StringBuilder itensString = new StringBuilder("");
 
-        for ( ItemModel item : itens){
-            Float valorTotal = (float) (MathUtils.converterParaDouble(item.getValor()) * item.getQuantidade());
-            itensString.append(
-                    String.format("%s R$ %s X%.2f R$ %.2f", item.getNomeProduto(), item.getValor(), item.getQuantidade(), valorTotal)
-            ).append('\n');
+        StringBuilder itensString = new StringBuilder("");
+        StringBuilder servicosString = new StringBuilder("");
+
+        if ( !itens.isEmpty() ){
+            itensString.append("\nDescrição peça:").append('\n');
+            for ( ItemModel item : itens){
+                Float valorTotal = (float) (MathUtils.converterParaDouble(item.getValor()) * item.getQuantidade());
+                itensString.append(
+                        String.format("%s R$ %s X%.2f R$ %.2f", item.getNomeProduto(), item.getValor(), item.getQuantidade(), valorTotal)
+                ).append('\n');
+            }
         }
+
+        if ( !servicos.isEmpty() ){
+            servicosString.append("\nDescrição serviço:").append('\n');
+            for ( ItemModel item : servicos){
+                servicosString.append(
+                        String.format("%s R$ %s ", item.getNomeProduto(), item.getValor())
+                ).append('\n');
+            }
+        }
+
 
         return  "Número da OS: " + numeroOs + '\n' +
                 "Data: " + data + '\n' +
-//                "Descrição: " + descricao + '\n' +
-//                "Descrição peça:\n" + itensString + '\n' +
-                "Valor total das peças: R$" + valorTotalPecas + '\n' +
+                itensString +
+                servicosString +
+                "\nValor total das peças: R$" + valorTotalPecas + '\n' +
                 "Valor total dos serviços: R$ " + valorService + '\n' +
                 "Desconto: R$ " + desconto + '\n' +
                 "Total: R$ " + total + '\n' +
