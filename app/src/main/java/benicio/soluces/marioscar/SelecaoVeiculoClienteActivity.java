@@ -3,12 +3,14 @@ package benicio.soluces.marioscar;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
+import androidx.appcompat.widget.SearchView;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.annotation.SuppressLint;
 import android.os.Bundle;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
@@ -52,7 +54,7 @@ public class SelecaoVeiculoClienteActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayShowHomeEnabled(true);
 
         configurarRecyclerView();
-        configurarListener();
+        configurarListener("");
 
         if ( bundle.getBoolean("exibirTodosOsDadosCliente", false)){
             mainBinding.layoutDadosCliente.setVisibility(View.VISIBLE);
@@ -70,8 +72,28 @@ public class SelecaoVeiculoClienteActivity extends AppCompatActivity {
         }
 
     }
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_pesquisa, menu);
 
-    private void configurarListener() {
+        MenuItem searchItem = menu.findItem(R.id.action_search);
+        SearchView searchView = (SearchView) searchItem.getActionView();
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                configurarListener(newText.toLowerCase().trim());
+                return true;
+            }
+        });
+
+        return super.onCreateOptionsMenu(menu);
+    }
+    private void configurarListener(String query) {
         refVeiculos.addValueEventListener(new ValueEventListener() {
             @SuppressLint("NotifyDataSetChanged")
             @Override
@@ -81,7 +103,20 @@ public class SelecaoVeiculoClienteActivity extends AppCompatActivity {
                     for ( DataSnapshot dado : snapshot.getChildren()){
                         VeiculoModel veiculoModel = dado.getValue(VeiculoModel.class);
                         if (veiculoModel.getIdCliente().equals(bundle.getString("idCliente", "")) ){
-                            veiculos.add(veiculoModel);
+                            if ( query.isEmpty() ){
+                                veiculos.add(veiculoModel);
+                            }else{
+                                if(
+                                        veiculoModel.getPlaca().toLowerCase().trim().contains(query) ||
+                                        veiculoModel.getChassi().toLowerCase().trim().contains(query) ||
+                                        veiculoModel.getAnoFab().toLowerCase().trim().contains(query) ||
+                                        veiculoModel.getRenavam().toLowerCase().trim().contains(query) ||
+                                        veiculoModel.getMarca().toLowerCase().trim().contains(query) ||
+                                        veiculoModel.getModelo().toLowerCase().trim().contains(query)
+                                ){
+                                    veiculos.add(veiculoModel);
+                                }
+                            }
                         }
                     }
                     adapterVeiculo.notifyDataSetChanged();

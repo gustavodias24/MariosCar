@@ -1,5 +1,6 @@
 package benicio.soluces.marioscar.adapters;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -57,6 +58,7 @@ import kotlin.jvm.internal.Lambda;
 
 public class AdapterOS extends RecyclerView.Adapter<AdapterOS.MyViewHolder> {
 
+    private DatabaseReference refOs = FirebaseDatabase.getInstance().getReference().getRef().child("os");
     int posFotoX;
     int posFotoY;
     List<Bitmap> bitmaps = new ArrayList<>();
@@ -84,9 +86,25 @@ public class AdapterOS extends RecyclerView.Adapter<AdapterOS.MyViewHolder> {
         return new MyViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.os_layout, parent, false));
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
         OSModel osModel = oss.get(position);
+
+        holder.excluirOS.setOnClickListener( view -> {
+            osModel.setExcluido(true);
+            Toast.makeText(a, "Excluindo...", Toast.LENGTH_SHORT).show();
+            refOs.child(
+                    osModel.getId()
+            ).setValue(osModel).addOnCompleteListener(task -> {
+                Toast.makeText(a, "Excluído com sucesso!", Toast.LENGTH_SHORT).show();
+                try{
+                    oss.remove(position);
+                    this.notifyDataSetChanged();
+                }catch (Exception ignored){}
+            });
+        });
+
         holder.infos.setText(
                 osModel.toString()
         );
@@ -123,7 +141,7 @@ public class AdapterOS extends RecyclerView.Adapter<AdapterOS.MyViewHolder> {
         TextView infos;
         RecyclerView r;
         LinearLayout layoutAdmin;
-        Button compartilharOS, editarOS;
+        Button compartilharOS, editarOS, excluirOS;
         public MyViewHolder(@NonNull View itemView) {
             super(itemView);
             infos = itemView.findViewById(R.id.infos_os);
@@ -131,6 +149,7 @@ public class AdapterOS extends RecyclerView.Adapter<AdapterOS.MyViewHolder> {
             layoutAdmin = itemView.findViewById(R.id.admin_layout);
             compartilharOS = itemView.findViewById(R.id.compartilharosbtn);
             editarOS = itemView.findViewById(R.id.editarosbtn);
+            excluirOS = itemView.findViewById(R.id.excluir_os_btn);
         }
     }
     private class CreateBitmapTask extends AsyncTask<Void, Void, Void> {

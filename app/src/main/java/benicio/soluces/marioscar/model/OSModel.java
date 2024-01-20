@@ -19,6 +19,8 @@ public class OSModel {
     VeiculoModel veiculoModel;
     UsuarioModel usuarioModel;
 
+    Boolean isExcluido = false;
+
     public OSModel() {
     }
 
@@ -87,6 +89,14 @@ public class OSModel {
                 "\nTriângulo: " + (triangulo ? "Sim" : "Não") +
                 "\nExtintor: " + (extintor ? "Sim" : "Não") +
                 "\nSom: " + (som ? "Sim" : "Não");
+    }
+
+    public Boolean getExcluido() {
+        return isExcluido;
+    }
+
+    public void setExcluido(Boolean excluido) {
+        isExcluido = excluido;
     }
 
     public VeiculoModel getVeiculoModel() {

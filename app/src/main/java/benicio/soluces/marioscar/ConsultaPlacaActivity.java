@@ -65,7 +65,9 @@ public class ConsultaPlacaActivity extends AppCompatActivity {
 
                         if ( osModel != null && osModel.getPlacaCarro() != null){
                             if (osModel.getPlacaCarro().toLowerCase().trim().equals(placa.toLowerCase().trim())){
-                                oss.add(osModel);
+                                if ( !osModel.getExcluido()){
+                                    oss.add(osModel);
+                                }
                             }
                         }
 

@@ -83,7 +83,9 @@ public class ExibidorDeOSActivity extends AppCompatActivity {
                         OSModel osModel = dado.getValue(OSModel.class);
                         assert osModel != null;
                         if ( osModel.getIdCarro().equals(bundle.getString("idCarro"))){
-                            listaOs.add(osModel);
+                            if ( !osModel.getExcluido()){
+                                listaOs.add(osModel);
+                            }
                         }
                     }
                     adapterOS.notifyDataSetChanged();

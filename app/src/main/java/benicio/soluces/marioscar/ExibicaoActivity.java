@@ -144,15 +144,17 @@ public class ExibicaoActivity extends AppCompatActivity {
                     listaOs.clear();
                     for( DataSnapshot dado : snapshot.getChildren()){
                         OSModel osModel = dado.getValue(OSModel.class);
-                        if ( query.isEmpty() ){
-                            listaOs.add(osModel);
-                        }else{
-                            if (
-                                            osModel.getPlacaCarro().toLowerCase().trim().contains(query) ||
-                                            osModel.getNumeroOs().toLowerCase().trim().contains(query)   ||
-                                            osModel.getData().toLowerCase().trim().contains(query)
-                            ){
+                        if ( !osModel.getExcluido()){
+                            if ( query.isEmpty() ){
                                 listaOs.add(osModel);
+                            }else{
+                                if (
+                                        osModel.getPlacaCarro().toLowerCase().trim().contains(query) ||
+                                                osModel.getNumeroOs().toLowerCase().trim().contains(query)   ||
+                                                osModel.getData().toLowerCase().trim().contains(query)
+                                ){
+                                    listaOs.add(osModel);
+                                }
                             }
                         }
                     }
