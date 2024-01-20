@@ -136,7 +136,7 @@ public class ExibicaoActivity extends AppCompatActivity {
     }
 
     private void configurarListenerOS(String query){
-        refOs.addValueEventListener(new ValueEventListener() {
+        refOs.addListenerForSingleValueEvent(new ValueEventListener() {
             @SuppressLint("NotifyDataSetChanged")
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {

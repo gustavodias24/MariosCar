@@ -3,11 +3,14 @@ package benicio.soluces.marioscar;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
+import androidx.appcompat.widget.SearchView;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.annotation.SuppressLint;
 import android.os.Bundle;
+import android.view.Menu;
 import android.view.MenuItem;
 
 import com.google.firebase.database.DataSnapshot;
@@ -49,8 +52,30 @@ public class SelecaoClienteActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayShowHomeEnabled(true);
 
         configurarRecyclerView();
-        configurarListener();
+        configurarListener("");
 
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_pesquisa, menu);
+
+        MenuItem searchItem = menu.findItem(R.id.action_search);
+        SearchView searchView = (SearchView) searchItem.getActionView();
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                configurarListener(newText.toLowerCase().trim());
+                return true;
+            }
+        });
+
+        return super.onCreateOptionsMenu(menu);
     }
 
     private void configurarRecyclerView() {
@@ -63,14 +88,30 @@ public class SelecaoClienteActivity extends AppCompatActivity {
 
     }
 
-    private void configurarListener(){
-        refClientes.addValueEventListener(new ValueEventListener() {
+    private void configurarListener(String query){
+        refClientes.addListenerForSingleValueEvent(new ValueEventListener() {
+            @SuppressLint("NotifyDataSetChanged")
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if ( snapshot.exists() ){
                     clientes.clear();
                     for ( DataSnapshot dado : snapshot.getChildren()){
-                        clientes.add(dado.getValue(UsuarioModel.class));
+                        UsuarioModel clienteModel = dado.getValue(UsuarioModel.class);
+                        if ( query.isEmpty() ){
+                            clientes.add(clienteModel);
+                        }else{
+                            assert clienteModel != null;
+                            if (
+                                    clienteModel.getNome().toLowerCase().trim().contains(query) ||
+                                    clienteModel.getCidade().toLowerCase().trim().contains(query) ||
+                                    clienteModel.getNome2().toLowerCase().trim().contains(query) ||
+                                    clienteModel.getEmail().toLowerCase().trim().contains(query) ||
+                                    clienteModel.getDocumento().toLowerCase().trim().contains(query) ||
+                                    clienteModel.getTelefone().toLowerCase().trim().contains(query)
+                            ){
+                                clientes.add(clienteModel);
+                            }
+                        }
                     }
 
                     adapterCliente.notifyDataSetChanged();
