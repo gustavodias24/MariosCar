@@ -428,17 +428,6 @@ public class OSActivity extends AppCompatActivity {
                     Objects.requireNonNull(mainBinding.valorTotalPecasField.getEditText()),
                     pecaModel.getValorPecaMultipl()
             );
-//            String valorAtual = mainBinding.valorTotalPecasField.getEditText().getText().toString().trim().replace("R$", "");
-//            String valorAtualCerto = valorAtual.replace(" ", "");
-//
-//            if ( valorAtual.isEmpty() ){
-//                mainBinding.valorTotalPecasField.getEditText().setText(pecaModel.getValorPecaMultipl() + "");
-//            }else{
-//                float somaTotal = Float.parseFloat(valorAtualCerto) + pecaModel.getValorPecaMultipl();
-//                mainBinding.valorTotalPecasField.getEditText().setText(
-//                        somaTotal + ""
-//                );
-//            }
 
             itens.add(pecaModel);
             adapterItens.notifyDataSetChanged();
@@ -518,41 +507,31 @@ public class OSActivity extends AppCompatActivity {
 
         adicionarItemBinding.nomeField.setHint("Serviço");
         adicionarItemBinding.valorField.setHint("Valor do serviço $");
-        adicionarItemBinding.quantiadeField.setVisibility(View.GONE);
+//        adicionarItemBinding.quantiadeField.setVisibility(View.GONE);
 
         adicionarItemBinding.adicionarPeca.setOnClickListener( view -> {
             String nomeServico = adicionarItemBinding.nomeField.getText().toString();
             String precoString = adicionarItemBinding.valorField.getEditText().getText().toString();
+            String quantidadeString = adicionarItemBinding.quantiadeField.getEditText().getText().toString();
 
             precoString = precoString.isEmpty() ? "0.0" : precoString;
+            quantidadeString = quantidadeString.isEmpty() ? "0.0" : quantidadeString;
             float  preco = Float.parseFloat(precoString);
+            float quantidade = Float.parseFloat(quantidadeString);
 
-            ItemModel serviceModel = new ItemModel(nomeServico, preco);
+            ItemModel serviceModel = new ItemModel(nomeServico, preco, quantidade);
 
             calcularValor(
                     Objects.requireNonNull(mainBinding.valorServicoField.getEditText()),
-                    serviceModel.getValor()
+                    serviceModel.getValorPecaMultipl()
             );
-
-//            String valorAtual = mainBinding.valorServicoField.getEditText().getText().toString().trim().replace("R$", "");
-//            String valorAtualCerto = valorAtual.replace(" ", "");
-//
-//            if ( valorAtual.isEmpty() ){
-//                mainBinding.valorServicoField.getEditText().setText(serviceModel.getValor() + "");
-//            }else{
-//                float somaTotal = Float.parseFloat(valorAtualCerto) + serviceModel.getValor();
-//
-//                mainBinding.valorServicoField.getEditText().setText(
-//                        somaTotal + ""
-//                );
-//            }
 
             servicos.add(serviceModel);
             adapterServicos.notifyDataSetChanged();
-
             dialogAdicionarServico.dismiss();
             adicionarItemBinding.nomeField.setText("");
             adicionarItemBinding.valorField.getEditText().setText("0");
+            adicionarItemBinding.quantiadeField.getEditText().setText("0");
         });
         b.setView(adicionarItemBinding.getRoot());
         dialogAdicionarServico  = b.create();

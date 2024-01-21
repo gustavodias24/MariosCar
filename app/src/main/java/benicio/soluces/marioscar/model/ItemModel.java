@@ -12,10 +12,6 @@ public class ItemModel {
     public ItemModel() {
     }
 
-    public ItemModel(String nomeProduto, float valor) {
-        this.nomeProduto = nomeProduto;
-        this.valor = valor;
-    }
 
     public float getValorPecaMultipl(){
         return  valor * quantidade;
@@ -33,7 +29,7 @@ public class ItemModel {
         if (quantidade > 0){
             quantidadeString  = MathUtils.padWithZeros((int) quantidade + "", 2) ;
         }
-        return  quantidadeString + " " + nomeProduto + "\nValor: R$" + valor;
+        return  quantidadeString + " " + nomeProduto + " Valor: R$" + valor;
     }
 
     public String getNomeProduto() {

@@ -269,7 +269,7 @@ public class AdapterOS extends RecyclerView.Adapter<AdapterOS.MyViewHolder> {
         canvas.drawText("Descrição completa: ", posDescricaoX, posDescricaoY, title);
         posDescricaoY += ESPACAMENTO_PADRAO;
 
-        for ( String linhaDaOs : osModel.toString().split("\n")) {
+        for ( String linhaDaOs : osModel.toStringPdf().split("\n")) {
             posDescricaoY += 10;
             canvas.drawText(linhaDaOs, posDescricaoX, posDescricaoY, restante);
         }

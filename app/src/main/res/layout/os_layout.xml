@@ -21,6 +21,7 @@
         android:padding="8dp"
         android:text="infos"
         android:textColor="#050505"
+        android:textSize="12sp"
         android:textStyle="bold" />
 
     <TextView

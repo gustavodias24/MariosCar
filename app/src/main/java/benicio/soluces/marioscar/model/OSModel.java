@@ -69,10 +69,50 @@ public class OSModel {
             ).append('\n');
         }
 
+        StringBuilder servicosString = new StringBuilder("");
+        for (ItemModel item : servicos){
+            Float valorTotal = item.getValor() * item.getQuantidade();
+            servicosString.append(
+                    String.format("%s R$ %.2f X%.2f R$%.2f", item.getNomeProduto(), item.getValor(), item.getQuantidade(), valorTotal)
+            ).append('\n');
+        }
+
         return  "Número da OS: " + numeroOs + '\n' +
                 "Data: " + data + '\n' +
-                "Descrição: " + descricao + '\n' +
+                "Descrição: " + descricao + "\n\n" +
                 "Descrição peça:\n" + itensString + '\n' +
+                "Descrição serviço:\n" + servicosString + '\n' +
+                "Valor total das peças: R$" + valorTotalPecas + '\n' +
+                "Valor total dos serviços: R$ " + valorService + '\n' +
+                "Desconto: R$ " + desconto + '\n' +
+                "Total: R$ " + total + '\n' +
+                "Obs: " + obs + '\n' +
+                "\nBateria: " + (bateria ? "Sim" : "Não") +
+                "\nAlarme: " + (alarme ? "Sim" : "Não") +
+                "\nBuzina: " + (buzina ? "Sim" : "Não") +
+                "\nTrava: " + (trava ? "Sim" : "Não") +
+                "\nVidro: " + (vidro ? "Sim" : "Não") +
+                "\nTapete: " + (tapete ? "Sim" : "Não") +
+                "\nChave de Roda: " + (chaveRoda ? "Sim" : "Não") +
+                "\nMacaco: " + (macaco ? "Sim" : "Não") +
+                "\nTriângulo: " + (triangulo ? "Sim" : "Não") +
+                "\nExtintor: " + (extintor ? "Sim" : "Não") +
+                "\nSom: " + (som ? "Sim" : "Não");
+    }
+
+    @SuppressLint("DefaultLocale")
+    public String toStringPdf() {
+        StringBuilder itensString = new StringBuilder("");
+
+        for ( ItemModel item : itens){
+            Float valorTotal = item.getValor() * item.getQuantidade();
+            itensString.append(
+                    String.format("%s R$ %.2f X%.2f R$%.2f", item.getNomeProduto(), item.getValor(), item.getQuantidade(), valorTotal)
+            ).append('\n');
+        }
+
+        return  "Número da OS: " + numeroOs + '\n' +
+                "Data: " + data + '\n' +
                 "Valor total das peças: R$" + valorTotalPecas + '\n' +
                 "Valor total dos serviços: R$ " + valorService + '\n' +
                 "Desconto: R$ " + desconto + '\n' +
