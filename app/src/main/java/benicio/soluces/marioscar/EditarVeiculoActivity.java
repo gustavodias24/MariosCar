@@ -11,17 +11,18 @@ import android.widget.Toast;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
+import benicio.soluces.marioscar.databinding.ActivityEditarClienteBinding;
 import benicio.soluces.marioscar.databinding.ActivityEditarVeiculoBinding;
 import benicio.soluces.marioscar.model.VeiculoModel;
+import benicio.soluces.marioscar.utils.DatabaseUtils;
 
 public class EditarVeiculoActivity extends AppCompatActivity {
 
-    private DatabaseReference refVeiculos = FirebaseDatabase.getInstance().getReference().getRef().child("veiculos");
+    private DatabaseReference refVeiculos = FirebaseDatabase.getInstance().getReference().getRef().child(DatabaseUtils.VEICULOS_DB);
     ActivityEditarVeiculoBinding mainBinding;
     private Bundle b;
 
     VeiculoModel veiculoModel;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -73,12 +74,12 @@ public class EditarVeiculoActivity extends AppCompatActivity {
             veiculoModel.setChassi(mainBinding.chassiField.getEditText().getText().toString());
 
             refVeiculos.child(b.getString("id", "")).setValue(veiculoModel).addOnCompleteListener( taks -> {
-                if ( taks.isSuccessful() ){
-                    Toast.makeText(this, "Veículo atualizado com sucesso!", Toast.LENGTH_SHORT).show();
-                    finish();
-                }else{
-                    Toast.makeText(this, "Problema de conexão!", Toast.LENGTH_SHORT).show();
-                }
+               if ( taks.isSuccessful() ){
+                   Toast.makeText(this, "Veículo atualizado com sucesso!", Toast.LENGTH_SHORT).show();
+                   finish();
+               }else{
+                   Toast.makeText(this, "Problema de conexão!", Toast.LENGTH_SHORT).show();
+               }
             });
         });
 

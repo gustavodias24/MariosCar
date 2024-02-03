@@ -12,6 +12,7 @@ import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.ContentValues;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
@@ -21,8 +22,8 @@ import android.provider.MediaStore;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.EditText;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -55,6 +56,7 @@ import benicio.soluces.marioscar.model.OSModel;
 import benicio.soluces.marioscar.model.ResponseIngurModel;
 import benicio.soluces.marioscar.model.UsuarioModel;
 import benicio.soluces.marioscar.model.VeiculoModel;
+import benicio.soluces.marioscar.utils.DatabaseUtils;
 import benicio.soluces.marioscar.utils.ImageUtils;
 import benicio.soluces.marioscar.utils.MathUtils;
 import benicio.soluces.marioscar.utils.RetrofitUtils;
@@ -68,9 +70,13 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 
 public class OSActivity extends AppCompatActivity {
-    private DatabaseReference refClientes = FirebaseDatabase.getInstance().getReference().getRef().child("clientes");
-    private DatabaseReference refVeiculos = FirebaseDatabase.getInstance().getReference().getRef().child("veiculos");
-    private DatabaseReference refOs = FirebaseDatabase.getInstance().getReference().getRef().child("os");
+
+    String idCarro ;
+    String placaCarro ;
+    String idCliente ;
+    private DatabaseReference refClientes = FirebaseDatabase.getInstance().getReference().getRef().child(DatabaseUtils.CLIENTES_DB);
+    private DatabaseReference refVeiculos = FirebaseDatabase.getInstance().getReference().getRef().child(DatabaseUtils.VEICULOS_DB);
+    private DatabaseReference refOs = FirebaseDatabase.getInstance().getReference().getRef().child(DatabaseUtils.OS_DB);
 
     private Dialog  dialogSelecionarFoto;
     private static final int REQUEST_IMAGE_CAPTURE = 1;
@@ -96,9 +102,10 @@ public class OSActivity extends AppCompatActivity {
     List<ItemModel> itens = new ArrayList<>();
     List<ItemModel> servicos = new ArrayList<>();
     int numeroOs = 0;
-    String idCarro ;
-    String placaCarro ;
-    String idCliente ;
+
+
+    String totalPecaString, totalServicoString, descontoString;
+    Dialog dfm;
 
     @SuppressLint("SetTextI18n")
     @Override
@@ -134,23 +141,25 @@ public class OSActivity extends AppCompatActivity {
                     adapterImages.notifyDataSetChanged();
                     itens.addAll(os.getItens());
                     adapterItens.notifyDataSetChanged();
+                    servicos.addAll(os.getServicos());
+                    adapterServicos.notifyDataSetChanged();
 
-                    mainBinding.bateria.setChecked(os.getBateria());
-                    mainBinding.alarme.setChecked(os.getAlarme());
-                    mainBinding.buzina.setChecked(os.getBuzina());
-                    mainBinding.trava.setChecked(os.getTrava());
-                    mainBinding.vidro.setChecked(os.getVidro());
-                    mainBinding.tapete.setChecked(os.getTapete());
-                    mainBinding.chaveRoda.setChecked(os.getChaveRoda());
-                    mainBinding.macaco.setChecked(os.getMacaco());
-                    mainBinding.triangulo.setChecked(os.getTriangulo());
-                    mainBinding.extintor.setChecked(os.getExtintor());
-                    mainBinding.som.setChecked(os.getSom());
+                    mainBinding.cabecote.setChecked(os.getCabecote());
+                    mainBinding.mancaisCabecote.setChecked(os.getMancaisCabecote());
+                    mainBinding.comando.setChecked(os.getComando());
+                    mainBinding.gaiola.setChecked(os.getGaiola());
+                    mainBinding.vela.setChecked(os.getVela());
+                    mainBinding.bloco.setChecked(os.getBloco());
+                    mainBinding.mancaisBloco.setChecked(os.getMancaisBloco());
+                    mainBinding.virabrequim.setChecked(os.getVirabrequim());
+                    mainBinding.biela.setChecked(os.getBiela());
+                    mainBinding.motoMontado.setChecked(os.getMotorMontado());
 
                     idCarro = os.getIdCarro();
                     idCliente = os.getIdCliente();
                     placaCarro = os.getPlacaCarro();
                     numeroOs = Integer.parseInt(os.getNumeroOs());
+
                 }else{
                     Toast.makeText(OSActivity.this, "Erro de conexão!", Toast.LENGTH_SHORT).show();
                     finish();
@@ -159,7 +168,7 @@ public class OSActivity extends AppCompatActivity {
 
         }
 
-        refOs.addListenerForSingleValueEvent(new ValueEventListener() {
+       refOs.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (numeroOs == 0){
@@ -171,6 +180,7 @@ public class OSActivity extends AppCompatActivity {
 
                     }
                 }
+
             }
 
             @Override
@@ -191,9 +201,12 @@ public class OSActivity extends AppCompatActivity {
                 id = b.getString("idOS");
             }
 
-            String idCarro = b.getString("idCarro", "");
-            String placaCarro = b.getString("placaCarro", "");
-            String idCliente = b.getString("idCliente", "");
+            if ( idCliente == null && placaCarro == null && placaCarro == null){
+                 idCarro = b.getString("idCarro", "");
+                 placaCarro = b.getString("placaCarro", "");
+                 idCliente = b.getString("idCliente", "");
+            }
+
 
             String descricao, descricaoPeca, valorTotal, valorService, desconto, total, obs, valorTotalPecas;
 
@@ -213,52 +226,61 @@ public class OSActivity extends AppCompatActivity {
                 if ( task.isSuccessful() ){
                     UsuarioModel cliente = task.getResult().getValue(UsuarioModel.class);
                     refVeiculos.child(idCarro).get().addOnCompleteListener(task1 -> {
+
                         if ( task1.isSuccessful() ){
+
                             VeiculoModel veiculo = task1.getResult().getValue(VeiculoModel.class);
-                            refOs.child(id).setValue(
-                                    new OSModel(
-                                            veiculo,
-                                            cliente,
-                                            idCliente,
-                                            servicos,
-                                            padWithZeros(numeroOs+"" , 6),
-                                            dateFormat.format(currentDate),
-                                            itens,
-                                            valorTotalPecas,
-                                            placaCarro,
-                                            id,
-                                            idCarro,
-                                            descricao, descricaoPeca,
-                                            total, valorService, desconto, total, obs,
-                                            imagesLink,
-                                            mainBinding.bateria.isChecked(),
-                                            mainBinding.alarme.isChecked(),
-                                            mainBinding.buzina.isChecked(),
-                                            mainBinding.trava.isChecked(),
-                                            mainBinding.vidro.isChecked(),
-                                            mainBinding.tapete.isChecked(),
-                                            mainBinding.chaveRoda.isChecked(),
-                                            mainBinding.macaco.isChecked(),
-                                            mainBinding.triangulo.isChecked(),
-                                            mainBinding.extintor.isChecked(),
-                                            mainBinding.som.isChecked()
-                                    )
-                            ).addOnCompleteListener(task2 -> {
-                                if ( task.isSuccessful() ){
-                                    finish();
-                                    startActivity(new Intent(getApplicationContext(), MainActivity.class));
-                                    if ( !b.getBoolean("isEdit", false)){
-                                        Toast.makeText(getApplicationContext(), "OS cadastrada com sucesso.", Toast.LENGTH_LONG).show();
+
+                            if (cliente != null && veiculo != null){
+                                refOs.child(id).setValue(
+                                        new OSModel(
+                                                id,
+                                                idCarro,
+                                                idCliente,
+                                                placaCarro,
+                                                descricao,
+                                                descricaoPeca,
+                                                total,
+                                                valorService,
+                                                desconto,
+                                                total,
+                                                obs,
+                                                valorTotalPecas,
+                                                imagesLink,
+                                                itens,
+                                                servicos,
+                                                padWithZeros(numeroOs+"" , 6),
+                                                dateFormat.format(currentDate),
+                                                mainBinding.cabecote.isChecked(),
+                                                mainBinding.mancaisCabecote.isChecked(),
+                                                mainBinding.comando.isChecked(),
+                                                mainBinding.gaiola.isChecked(),
+                                                mainBinding.vela.isChecked(),
+                                                mainBinding.bloco.isChecked(),
+                                                mainBinding.mancaisBloco.isChecked(),
+                                                mainBinding.virabrequim.isChecked(),
+                                                mainBinding.biela.isChecked(),
+                                                mainBinding.motoMontado.isChecked(),veiculo,
+                                                cliente
+                                        )
+                                ).addOnCompleteListener(task2 -> {
+                                    if ( task2.isSuccessful() ){
+                                        finish();
+                                        startActivity(new Intent(getApplicationContext(), MainActivity.class));
+                                        if ( !b.getBoolean("isEdit", false)){
+                                            Toast.makeText(getApplicationContext(), "OS cadastrada com sucesso.", Toast.LENGTH_LONG).show();
+                                        }else{
+                                            Toast.makeText(getApplicationContext(), "OS atualizada com sucesso.", Toast.LENGTH_LONG).show();
+                                        }
                                     }else{
-                                        Toast.makeText(getApplicationContext(), "OS atualizada com sucesso.", Toast.LENGTH_LONG).show();
+                                        Toast.makeText(getApplicationContext(), "Erro de conexão, tente novamente.", Toast.LENGTH_LONG).show();
+                                        dialogCarregando.dismiss();
                                     }
-                                }else{
-                                    Log.d("firebaseBucetinha", "onDataChange: " + task.getException().getMessage());
-                                    Log.d("firebaseBucetinha", "onDataChange: " + task.getException().getCause());
-                                    Toast.makeText(getApplicationContext(), "Erro de conexão, tente novamente.", Toast.LENGTH_LONG).show();
-                                    dialogCarregando.dismiss();
-                                }
-                            });
+                                });
+                            }else{
+                                Toast.makeText(this, "Tente novamente...", Toast.LENGTH_SHORT).show();
+                            }
+
                         }else{
                             Toast.makeText(OSActivity.this, "Problema de conexão", Toast.LENGTH_SHORT).show();
                         }
@@ -281,35 +303,33 @@ public class OSActivity extends AppCompatActivity {
            dialogAdicionarServico.show();
        });
 
-       mainBinding.btnCalcularTudo.setOnClickListener( view -> {
-           Double desconto,valorServico, valorPeca;
+       mainBinding.calculoResulado.setOnClickListener( view -> {
+           AlertDialog.Builder b = new AlertDialog.Builder(this);
+           b.setTitle("Confirme");
 
-           try{
-               desconto = Double.parseDouble(mainBinding.descontoField.getEditText().getText().toString().replace("R$", "").replace(" ", ""));
+           totalPecaString = mainBinding.valorTotalPecasField.getEditText().getText().toString();
+           totalServicoString = mainBinding.valorServicoField.getEditText().getText().toString();
+           descontoString = mainBinding.descontoField.getEditText().getText().toString();
 
-           }catch (Exception e){
-               desconto = 0.0;
-           }
+           if ( totalPecaString.isEmpty() ){ totalPecaString = "0"; }
+           if ( totalServicoString.isEmpty() ){ totalServicoString = "0"; }
+           if ( descontoString.isEmpty() ){ descontoString = "0"; }
 
-           try{
-               valorServico = Double.parseDouble(mainBinding.valorServicoField.getEditText().getText().toString().replace("R$", "").replace(" ", ""));
+           b.setMessage(String.format(" R$ %s + R$ %s - R$ %s", totalPecaString, totalServicoString, descontoString));
+           b.setNegativeButton("Cancelar", null);
+           b.setPositiveButton("Confirmar", (dialogInterface, i) -> {
 
-           }catch (Exception e){
-               valorServico = 0.0;
-           }
+               Double resultado = MathUtils.converterParaDouble(totalPecaString) + MathUtils.converterParaDouble(totalServicoString) - MathUtils.converterParaDouble(descontoString);
 
-           try{
-               valorPeca = Double.parseDouble(mainBinding.valorTotalPecasField.getEditText().getText().toString().replace("R$", "").replace(" ", ""));
+               String resultadoFormatado = MathUtils.formatarMoeda(resultado);
 
-           }catch (Exception e){
-                valorPeca =0.0;
-           }
+               mainBinding.totalField.getEditText().setText(resultadoFormatado);
+               Toast.makeText(this, "Resultado total: " + resultadoFormatado, Toast.LENGTH_SHORT).show();
+               dfm.dismiss();
+           });
 
-           Double precoCalculado = (valorServico + valorPeca) - desconto;
-
-           mainBinding.totalField.getEditText().setText(
-                   precoCalculado + ""
-           );
+           dfm = b.create();
+           dfm.show();
        });
 
         configurarRecyclerImages();
@@ -344,7 +364,7 @@ public class OSActivity extends AppCompatActivity {
         rItens.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
         rItens.setHasFixedSize(true);
         rItens.addItemDecoration(new DividerItemDecoration(getApplicationContext(), DividerItemDecoration.VERTICAL));
-        adapterItens = new AdapterItens(itens, getApplicationContext(), mainBinding.valorTotalPecasField.getEditText(), false);
+        adapterItens = new AdapterItens(itens, getApplicationContext(), mainBinding.valorTotalPecasField);
         rItens.setAdapter(adapterItens);
     }
 
@@ -353,47 +373,43 @@ public class OSActivity extends AppCompatActivity {
         rServicos.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
         rServicos.setHasFixedSize(true);
         rServicos.addItemDecoration(new DividerItemDecoration(getApplicationContext(), DividerItemDecoration.VERTICAL));
-        adapterServicos = new AdapterItens(servicos, getApplicationContext(), mainBinding.valorServicoField.getEditText(), true);
+        adapterServicos = new AdapterItens(servicos, getApplicationContext(), mainBinding.valorServicoField);
         rServicos.setAdapter(adapterServicos);
     }
 
-    @SuppressLint("SetTextI18n")
-    public  void calcularValor(EditText editValorExistente, float novoValor){
-        String valorAtual = editValorExistente.getText().toString().trim().replace("R$", "").replace(" ", "");
-
-        if ( valorAtual.isEmpty() ){
-            editValorExistente.setText(novoValor + "");
-        }else{
-            float somaTotal = Float.parseFloat(valorAtual) + novoValor;
-            editValorExistente.setText(
-                    somaTotal + ""
-            );
-        }
-    }
-
-    @SuppressLint({"NotifyDataSetChanged", "SetTextI18n"})
+    @SuppressLint("NotifyDataSetChanged")
     private void configurarDialogProduto(){
         AlertDialog.Builder b = new AlertDialog.Builder(OSActivity.this);
         b.setTitle("Adicionar peça");
         LayoutAdicionarItemBinding adicionarItemBinding = LayoutAdicionarItemBinding.inflate(getLayoutInflater());
 
         String[] pecasComplete = {
-                "Bomba de óleo", "Bomba d água", "Filtro lubrificante", "Filtro de ar",
-                "Filtro de combustível", "Filtro de cabine", "Óleo Lubrificante",
-                "Kit correia dentada", "Correia poliv", "Polia do alternador", "Junta da tampa de válvula",
-                "Junta de escp", "Junta de admissão", "Jogo de junta superior", "Jogo de junta completo",
-                "Retentor do comando", "Retentor do volante", "Silicone Alta temperatura", "Retentor da polia",
-                "Câmara d água", "Anti chama", "Reservatório de água", "Aditivo concentrado",
-                "Água destilada", "Desengripante", "Descarbonizante", "Jogo de pistão",
-                "Jogo de bronze de biela", "Jogo de bronze de chumaceira", "Jogo de seguimento",
-                "Base do motor", "Base da caixa de marcha", "Cano d água", "Válvula termostática",
-                "Cola juntas", "Amortecedor dianteiro", "Amortecedor traseiro", "Kit coxim dianteiro",
-                "Coxim dianteiro", "Kit batedor dianteiro", "Coxim traseiro", "Batedor traseiro",
-                "Bieleta", "Pivô de suspensão", "Terminal", "Braço de direção", "Bucha da estabilizadora",
-                "Bucha da sapata", "Barra tensora", "Suporte da barra tensora", "Jogo de cabo de vela",
-                "Jogo de vela", "Jogo de pastilhas", "Jogo de disco", "Kit embreagem", "Atuador do pedal",
-                "Atuador da caixa", "Caixa de direção", "Lâmpada"
+                "Válvula de escape",
+                "Válvula de admissão",
+                "Retentor de válvula",
+                "Guia de válvula",
+                "Sede de válvula",
+                "Camisa de cilindro",
+                "Bucha de Biela",
+                "Bucha do comando do Bloco",
+                "Biela",
+                "Cabeçote",
+                "Virabrequim",
+                "Comando de válvula",
+                "Bloco",
+                "Jogo de junta completo com retentor",
+                "Jogo de pistão",
+                "Casquilho de chumaceira",
+                "Casquilho de biela",
+                "Bomba de óleo",
+                "Bomba d água",
+                "Kit correia dentada",
+                "Silicone",
+                "Limpa contato",
+                "Descarbonizante",
+                "Jogo de parafuso do cabeçote"
         };
+
 
         ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_dropdown_item_1line, pecasComplete);
 
@@ -414,23 +430,30 @@ public class OSActivity extends AppCompatActivity {
             String quantidadeString = adicionarItemBinding.quantiadeField.getEditText().getText().toString();
             String precoString = adicionarItemBinding.valorField.getEditText().getText().toString();
 
-
-
-
-            quantidadeString = quantidadeString.isEmpty() ? "0.0" : quantidadeString;
+            quantidadeString = quantidadeString.isEmpty() ? "0" : quantidadeString;
             precoString = precoString.isEmpty() ? "0.0" : precoString;
 
-            float quantiade = Float.parseFloat(quantidadeString);
-            float  preco = Float.parseFloat(precoString);
-            ItemModel pecaModel = new ItemModel(nomePeca, preco, quantiade);
-
-            calcularValor(
-                    Objects.requireNonNull(mainBinding.valorTotalPecasField.getEditText()),
-                    pecaModel.getValorPecaMultipl()
-            );
-
+            int quantidade = Integer.parseInt(quantidadeString);
+            ItemModel pecaModel = new ItemModel(nomePeca, precoString, quantidade);
             itens.add(pecaModel);
             adapterItens.notifyDataSetChanged();
+
+            String valorAtual = mainBinding.valorTotalPecasField.getEditText().getText().toString().trim().replace("R$", "");
+            String valorAtualCerto = valorAtual.replace(" ", "");
+
+            if ( valorAtual.isEmpty() ){
+                mainBinding.valorTotalPecasField.getEditText().setText(pecaModel.getValorPecaMultipl());
+            }else{
+                Double valorJaTa = MathUtils.converterParaDouble(valorAtualCerto);
+                Double valorPraSomar = MathUtils.converterParaDouble(pecaModel.getValorPecaMultipl());
+                Double somaTotal = valorJaTa + valorPraSomar;
+
+                mainBinding.valorTotalPecasField.getEditText().setText(
+                        MathUtils.formatarMoeda(somaTotal)
+                );
+            }
+
+
             dialogAdicionarItem.dismiss();
             adicionarItemBinding.nomeField.setText("");
             adicionarItemBinding.quantiadeField.getEditText().setText("0");
@@ -446,49 +469,18 @@ public class OSActivity extends AppCompatActivity {
         b.setTitle("Adicionar serviço");
         LayoutAdicionarItemBinding adicionarItemBinding = LayoutAdicionarItemBinding.inflate(getLayoutInflater());
 
+        adicionarItemBinding.nomeField.setHint("Serviço");
+        adicionarItemBinding.valorField.setHint("Valor do serviço $");
+        adicionarItemBinding.quantiadeField.setVisibility(View.GONE);
 
-        String[] servicosComplete = {
-                "Remoção e instalação do Cabeçote",
-                "Remoção e instalação do motor",
-                "Remoção, Desmontagem, Montagem e instalação do Motor",
-                "Remoção e instalação do amortecedor",
-                "Remoção e instalação do coxim",
-                "Remoção e instalação do kit batedor",
-                "Remoção e instalação da bieleta",
-                "Remoção e instalação do pivô",
-                "Remoção e instalação dos braços de direção",
-                "Remoção e instalação do terminal",
-                "Remoção e instalação da bucha da sapata",
-                "Remoção e instalação da bucha estabilizadora",
-                "Remoção e instalação das pastilhas de freio",
-                "Remoção e instalação de Disco e pastilhas",
-                "Remoção e instalação da correia dentada",
-                "Remoção e instalação da carreia do alternador",
-                "Remoção e instalação da bomba d água",
-                "Remoção e instalação da tampa de válvula",
-                "Remoção e instalação do tanque de combustível",
-                "Remoção e instalação da bomba, bico injetor",
-                "Limpeza do Raill e do sistema de combustível",
-                "Remoção e instalação da câmara d água",
-                "Remoção e instalação do rolamento dianteiro",
-                "Remoção e instalação do rolamento traseiro",
-                "Remoção e instalação da junta homocinética",
-                "Injeção eletrônica Completa",
-                "Remoção e instalação do bico injetor",
-                "Remoção e instalação do cilindro mestre",
-                "Remoção e instalação do kit de embreagem",
-                "Remoção e instalação do carter",
-                "Limpeza do sistema de freio",
-                "Limpeza do sistema hidráulico",
-                "Limpeza do sistema de arrefecimento",
-                "Remoção e instalação do trocador de calor",
-                "Remoção e instalação da caixa de direção",
-                "Remoção e instalação da caixa de marcha",
-                "Remoção e instalação da alavanca",
-                "Remoção e instalação da base do motor",
-                "Remoção e instalação da bucha do feixo de mola",
-                "Arquivamento de mola"
-        };
+        String[] servicosComplete = {"Teste hidrostático", "Plaina a face do bloco", "Plaina a face do Cabeçote",
+                "Esmerilhar Válvula", "Retificar sede", "Retificar válvula", "Trocar guia de válvula",
+                "Bronquea Guia", "Retificar virabrequim", "Retificar cilindro", "Encamisar Cilindro",
+                "Polir Comando", "Polir Virabrequim", "Rebaixa pistão", "Embuchar Biela",
+                "Retificar ferro de biela", "Limpeza Química do Motor", "Limpeza Química do cabeçote",
+                "Limpeza Química do bloco", "Desmontagem e montagem do motor", "Encher furo com solda",
+                "Recuperação da lateral do cabeçote", "Alinhar Mancais", "Projeção das camisas",
+                "Extrair parafuso", "Reabrir rosca do parafuso"};
 
         ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_dropdown_item_1line, servicosComplete);
 
@@ -504,34 +496,35 @@ public class OSActivity extends AppCompatActivity {
             Toast.makeText(getApplicationContext(),  selectedFrase + " selecionado!", Toast.LENGTH_SHORT).show();
         });
 
-
-        adicionarItemBinding.nomeField.setHint("Serviço");
-        adicionarItemBinding.valorField.setHint("Valor do serviço $");
-//        adicionarItemBinding.quantiadeField.setVisibility(View.GONE);
-
         adicionarItemBinding.adicionarPeca.setOnClickListener( view -> {
             String nomeServico = adicionarItemBinding.nomeField.getText().toString();
             String precoString = adicionarItemBinding.valorField.getEditText().getText().toString();
-            String quantidadeString = adicionarItemBinding.quantiadeField.getEditText().getText().toString();
 
             precoString = precoString.isEmpty() ? "0.0" : precoString;
-            quantidadeString = quantidadeString.isEmpty() ? "0.0" : quantidadeString;
-            float  preco = Float.parseFloat(precoString);
-            float quantidade = Float.parseFloat(quantidadeString);
 
-            ItemModel serviceModel = new ItemModel(nomeServico, preco, quantidade);
-
-            calcularValor(
-                    Objects.requireNonNull(mainBinding.valorServicoField.getEditText()),
-                    serviceModel.getValorPecaMultipl()
-            );
+            ItemModel serviceModel = new ItemModel(nomeServico, precoString);
 
             servicos.add(serviceModel);
             adapterServicos.notifyDataSetChanged();
+
+            String valorAtual = mainBinding.valorServicoField.getEditText().getText().toString().trim().replace("R$", "");
+            String valorAtualCerto = valorAtual.replace(" ", "");
+
+            if ( valorAtual.isEmpty() ){
+                mainBinding.valorServicoField.getEditText().setText(serviceModel.getValor());
+            }else{
+                Double valorJaTa = MathUtils.converterParaDouble(valorAtualCerto);
+                Double valorPraSomar = MathUtils.converterParaDouble(serviceModel.getValor());
+                Double somaTotal = valorJaTa + valorPraSomar;
+
+                mainBinding.valorServicoField.getEditText().setText(
+                        MathUtils.formatarMoeda(somaTotal)
+                );
+            }
+
             dialogAdicionarServico.dismiss();
             adicionarItemBinding.nomeField.setText("");
             adicionarItemBinding.valorField.getEditText().setText("0");
-            adicionarItemBinding.quantiadeField.getEditText().setText("0");
         });
         b.setView(adicionarItemBinding.getRoot());
         dialogAdicionarServico  = b.create();

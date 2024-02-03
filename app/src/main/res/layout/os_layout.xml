@@ -21,7 +21,6 @@
         android:padding="8dp"
         android:text="infos"
         android:textColor="#050505"
-        android:textSize="12sp"
         android:textStyle="bold" />
 
     <TextView
@@ -42,7 +41,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
-        android:visibility="gone">
+        android:visibility="visible">
 
         <Button
             android:id="@+id/editarosbtn"
@@ -55,22 +54,22 @@
             android:textStyle="bold" />
 
         <Button
+            android:id="@+id/excluirosbtn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp"
+            android:backgroundTint="#FF0707"
+            android:text="excluir"
+            android:textAllCaps="true"
+            android:textStyle="bold" />
+
+        <Button
             android:id="@+id/compartilharosbtn"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="8dp"
             android:backgroundTint="#4CAF50"
             android:text="compartilhar no whatsapp"
-            android:textAllCaps="true"
-            android:textStyle="bold" />
-
-        <Button
-            android:id="@+id/excluir_os_btn"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="8dp"
-            android:backgroundTint="#FF0000"
-            android:text="EXCLUIR OS"
             android:textAllCaps="true"
             android:textStyle="bold" />
     </LinearLayout>

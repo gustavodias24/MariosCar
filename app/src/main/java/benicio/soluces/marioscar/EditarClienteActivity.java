@@ -8,21 +8,22 @@ import android.os.Bundle;
 import android.view.MenuItem;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 import benicio.soluces.marioscar.databinding.ActivityEditarClienteBinding;
 import benicio.soluces.marioscar.model.UsuarioModel;
+import benicio.soluces.marioscar.utils.DatabaseUtils;
 
 public class EditarClienteActivity extends AppCompatActivity {
 
     private ActivityEditarClienteBinding mainBinding;
-    private DatabaseReference refClientes = FirebaseDatabase.getInstance().getReference().getRef().child("clientes");
+    private DatabaseReference refClientes = FirebaseDatabase.getInstance().getReference().getRef().child(DatabaseUtils.CLIENTES_DB);
     private Bundle b;
 
     private UsuarioModel usuarioModel;
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

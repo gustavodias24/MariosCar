@@ -54,11 +54,11 @@ import benicio.soluces.marioscar.databinding.LoadingLayoutBinding;
 import benicio.soluces.marioscar.model.ItemModel;
 import benicio.soluces.marioscar.model.OSModel;
 import benicio.soluces.marioscar.model.UsuarioModel;
+import benicio.soluces.marioscar.utils.DatabaseUtils;
 import kotlin.jvm.internal.Lambda;
 
 public class AdapterOS extends RecyclerView.Adapter<AdapterOS.MyViewHolder> {
-
-    private DatabaseReference refOs = FirebaseDatabase.getInstance().getReference().getRef().child("os");
+    private DatabaseReference refOs = FirebaseDatabase.getInstance().getReference().getRef().child(DatabaseUtils.OS_DB);
     int posFotoX;
     int posFotoY;
     List<Bitmap> bitmaps = new ArrayList<>();
@@ -90,21 +90,6 @@ public class AdapterOS extends RecyclerView.Adapter<AdapterOS.MyViewHolder> {
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
         OSModel osModel = oss.get(position);
-
-        holder.excluirOS.setOnClickListener( view -> {
-            osModel.setExcluido(true);
-            Toast.makeText(a, "Excluindo...", Toast.LENGTH_SHORT).show();
-            refOs.child(
-                    osModel.getId()
-            ).setValue(osModel).addOnCompleteListener(task -> {
-                Toast.makeText(a, "Excluído com sucesso!", Toast.LENGTH_SHORT).show();
-                try{
-                    oss.remove(position);
-                    this.notifyDataSetChanged();
-                }catch (Exception ignored){}
-            });
-        });
-
         holder.infos.setText(
                 osModel.toString()
         );
@@ -122,6 +107,18 @@ public class AdapterOS extends RecyclerView.Adapter<AdapterOS.MyViewHolder> {
             i.putExtra("isEdit", true);
             i.putExtra("idOS", osModel.getId());
             c.startActivity(i);
+        });
+
+        holder.excluirOS.setOnClickListener(view -> {
+            osModel.setDeletado(true);
+
+            refOs.child(osModel.getId()).setValue(osModel).addOnCompleteListener( task -> {
+                if ( task.isSuccessful() ){
+                    Toast.makeText(a, "OS excluída", Toast.LENGTH_SHORT).show();
+                    oss.remove(position);
+                    this.notifyDataSetChanged();
+                }
+            });
         });
 
         holder.compartilharOS.setOnClickListener( view -> {
@@ -149,7 +146,7 @@ public class AdapterOS extends RecyclerView.Adapter<AdapterOS.MyViewHolder> {
             layoutAdmin = itemView.findViewById(R.id.admin_layout);
             compartilharOS = itemView.findViewById(R.id.compartilharosbtn);
             editarOS = itemView.findViewById(R.id.editarosbtn);
-            excluirOS = itemView.findViewById(R.id.excluir_os_btn);
+            excluirOS = itemView.findViewById(R.id.excluirosbtn);
         }
     }
     private class CreateBitmapTask extends AsyncTask<Void, Void, Void> {
@@ -269,7 +266,7 @@ public class AdapterOS extends RecyclerView.Adapter<AdapterOS.MyViewHolder> {
         canvas.drawText("Descrição completa: ", posDescricaoX, posDescricaoY, title);
         posDescricaoY += ESPACAMENTO_PADRAO;
 
-        for ( String linhaDaOs : osModel.toStringPdf().split("\n")) {
+        for ( String linhaDaOs : osModel.toString().split("\n")) {
             posDescricaoY += 10;
             canvas.drawText(linhaDaOs, posDescricaoX, posDescricaoY, restante);
         }
@@ -301,7 +298,7 @@ public class AdapterOS extends RecyclerView.Adapter<AdapterOS.MyViewHolder> {
             File file = new File(kaizenProjetosDir, nomeArquivo);
             try {
                 pdfDocument.writeTo(new FileOutputStream(file));
-                Toast.makeText(a, "PDF salvo em Documents/MARIOSCAR", Toast.LENGTH_SHORT).show();
+                Toast.makeText(a, "PDF salvo em Documents/MARDIESEL", Toast.LENGTH_SHORT).show();
             } catch (IOException e) {
                 AlertDialog.Builder b = new AlertDialog.Builder(a);
                 b.setTitle("Aviso");

@@ -6,12 +6,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.google.android.material.textfield.TextInputLayout;
 
 import java.util.List;
 
@@ -23,14 +24,12 @@ public class AdapterItens extends RecyclerView.Adapter<AdapterItens.MyViewHolder
     List<ItemModel> itens;
     Context c;
 
-    EditText editCalculo;
+    TextInputLayout fieldValue;
 
-    Boolean isServico;
-    public AdapterItens(List<ItemModel> itens, Context c, EditText editCalculo,Boolean isServico) {
+    public AdapterItens(List<ItemModel> itens, Context c, TextInputLayout fieldValue) {
         this.itens = itens;
         this.c = c;
-        this.editCalculo = editCalculo;
-        this.isServico = isServico;
+        this.fieldValue = fieldValue;
     }
 
     @NonNull
@@ -44,29 +43,22 @@ public class AdapterItens extends RecyclerView.Adapter<AdapterItens.MyViewHolder
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
         ItemModel item = itens.get(position);
 
-        holder.editar.setVisibility(View.GONE);
-
         holder.info.setText(item.toString());
 
-        holder.itemView.getRootView().setClickable(false);
-
-        holder.excluir.setOnClickListener(view -> {
+        holder.excluir.setOnLongClickListener( view -> {
             itens.remove(position);
+            Double valorAntigo = MathUtils.converterParaDouble(fieldValue.getEditText().getText().toString());
+            Double valorRemovido = MathUtils.converterParaDouble(item.getValor());
+            String valorAtualizado = MathUtils.formatarMoeda((valorAntigo - valorRemovido));
+            fieldValue.getEditText().setText(valorAtualizado);
             Toast.makeText(c, "Item removido", Toast.LENGTH_SHORT).show();
-            if (!isServico){
-                calcularValor(
-                        editCalculo,
-                        item.getValorPecaMultipl()
-                );
-            }else{
-                calcularValor(
-                        editCalculo,
-                        item.getValor()
-                );
-            }
-
             this.notifyDataSetChanged();
+
+            return false;
         });
+
+        holder.editar.setVisibility(View.GONE);
+
     }
 
     @Override
@@ -83,20 +75,6 @@ public class AdapterItens extends RecyclerView.Adapter<AdapterItens.MyViewHolder
             info = itemView.findViewById(R.id.infos_text);
             editar = itemView.findViewById(R.id.editar_btn_veiculo_cliente);
             excluir = itemView.findViewById(R.id.excluir_btn_veiculo_cliente);
-        }
-    }
-
-    @SuppressLint("SetTextI18n")
-    public  void calcularValor(EditText editValorExistente, float novoValor){
-        String valorAtual = editValorExistente.getText().toString().trim().replace("R$", "").replace(" ", "");
-
-        if ( valorAtual.isEmpty() ){
-            editValorExistente.setText(novoValor + "");
-        }else{
-            float somaTotal = Float.parseFloat(valorAtual) - novoValor;
-            editValorExistente.setText(
-                    somaTotal + ""
-            );
         }
     }
 }

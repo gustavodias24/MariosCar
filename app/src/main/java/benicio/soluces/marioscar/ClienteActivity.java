@@ -19,11 +19,12 @@ import java.util.UUID;
 import benicio.soluces.marioscar.databinding.ActivityClienteBinding;
 import benicio.soluces.marioscar.databinding.ActivityMainBinding;
 import benicio.soluces.marioscar.model.UsuarioModel;
+import benicio.soluces.marioscar.utils.DatabaseUtils;
 
 public class ClienteActivity extends AppCompatActivity {
 
     private ActivityClienteBinding mainBinding;
-    private DatabaseReference refClientes = FirebaseDatabase.getInstance().getReference().getRef().child("clientes");
+    private DatabaseReference refClientes = FirebaseDatabase.getInstance().getReference().getRef().child(DatabaseUtils.CLIENTES_DB);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

@@ -29,6 +29,7 @@ import benicio.soluces.marioscar.adapters.AdapterVeiculo;
 import benicio.soluces.marioscar.databinding.ActivitySelecaoVeiculoClienteBinding;
 import benicio.soluces.marioscar.model.UsuarioModel;
 import benicio.soluces.marioscar.model.VeiculoModel;
+import benicio.soluces.marioscar.utils.DatabaseUtils;
 
 public class SelecaoVeiculoClienteActivity extends AppCompatActivity {
 
@@ -38,8 +39,8 @@ public class SelecaoVeiculoClienteActivity extends AppCompatActivity {
     private RecyclerView r;
     AdapterVeiculo adapterVeiculo;
     private List<VeiculoModel> veiculos = new ArrayList<>();
-    private DatabaseReference refVeiculos = FirebaseDatabase.getInstance().getReference().getRef().child("veiculos");
-    private DatabaseReference refClientes = FirebaseDatabase.getInstance().getReference().getRef().child("clientes");
+    private DatabaseReference refVeiculos = FirebaseDatabase.getInstance().getReference().getRef().child(DatabaseUtils.VEICULOS_DB);
+    private DatabaseReference refClientes = FirebaseDatabase.getInstance().getReference().getRef().child(DatabaseUtils.CLIENTES_DB);
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -72,6 +73,7 @@ public class SelecaoVeiculoClienteActivity extends AppCompatActivity {
         }
 
     }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_pesquisa, menu);
@@ -93,6 +95,7 @@ public class SelecaoVeiculoClienteActivity extends AppCompatActivity {
 
         return super.onCreateOptionsMenu(menu);
     }
+
     private void configurarListener(String query) {
         refVeiculos.addValueEventListener(new ValueEventListener() {
             @SuppressLint("NotifyDataSetChanged")
@@ -108,11 +111,11 @@ public class SelecaoVeiculoClienteActivity extends AppCompatActivity {
                             }else{
                                 if(
                                         veiculoModel.getPlaca().toLowerCase().trim().contains(query) ||
-                                        veiculoModel.getChassi().toLowerCase().trim().contains(query) ||
-                                        veiculoModel.getAnoFab().toLowerCase().trim().contains(query) ||
-                                        veiculoModel.getRenavam().toLowerCase().trim().contains(query) ||
-                                        veiculoModel.getMarca().toLowerCase().trim().contains(query) ||
-                                        veiculoModel.getModelo().toLowerCase().trim().contains(query)
+                                                veiculoModel.getChassi().toLowerCase().trim().contains(query) ||
+                                                veiculoModel.getAnoFab().toLowerCase().trim().contains(query) ||
+                                                veiculoModel.getRenavam().toLowerCase().trim().contains(query) ||
+                                                veiculoModel.getMarca().toLowerCase().trim().contains(query) ||
+                                                veiculoModel.getModelo().toLowerCase().trim().contains(query)
                                 ){
                                     veiculos.add(veiculoModel);
                                 }

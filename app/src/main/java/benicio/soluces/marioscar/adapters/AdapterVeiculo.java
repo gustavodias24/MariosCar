@@ -1,5 +1,6 @@
 package benicio.soluces.marioscar.adapters;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.view.LayoutInflater;
@@ -22,9 +23,11 @@ import benicio.soluces.marioscar.ExibidorDeOSActivity;
 import benicio.soluces.marioscar.OSActivity;
 import benicio.soluces.marioscar.R;
 import benicio.soluces.marioscar.model.VeiculoModel;
+import benicio.soluces.marioscar.utils.DatabaseUtils;
 
 public class AdapterVeiculo extends RecyclerView.Adapter<AdapterVeiculo.MyViewHolder>{
-    private DatabaseReference refVeiculos = FirebaseDatabase.getInstance().getReference().getRef().child("veiculos");
+
+    private DatabaseReference refVeiculos = FirebaseDatabase.getInstance().getReference().getRef().child(DatabaseUtils.VEICULOS_DB);
     List<VeiculoModel> veiculos;
     Context c;
 
@@ -42,6 +45,7 @@ public class AdapterVeiculo extends RecyclerView.Adapter<AdapterVeiculo.MyViewHo
         return new MyViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.exibir_clientes, parent, false));
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
         VeiculoModel veiculoModel = veiculos.get(position);

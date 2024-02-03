@@ -26,10 +26,11 @@ import benicio.soluces.marioscar.adapters.AdapterOS;
 import benicio.soluces.marioscar.databinding.ActivityConsultaPlacaBinding;
 import benicio.soluces.marioscar.databinding.ActivityMainBinding;
 import benicio.soluces.marioscar.model.OSModel;
+import benicio.soluces.marioscar.utils.DatabaseUtils;
 
 public class ConsultaPlacaActivity extends AppCompatActivity {
 
-    private DatabaseReference refOs = FirebaseDatabase.getInstance().getReference().getRef().child("os");
+    private DatabaseReference refOs = FirebaseDatabase.getInstance().getReference().getRef().child(DatabaseUtils.OS_DB);
     private ActivityConsultaPlacaBinding mainBinding;
     private List<OSModel> oss = new ArrayList<>();
     private RecyclerView r;
@@ -46,7 +47,7 @@ public class ConsultaPlacaActivity extends AppCompatActivity {
         mainBinding.consultar.setOnClickListener( view -> {
             Toast.makeText(this, "Consultando...", Toast.LENGTH_SHORT).show();
             consultar(
-                    mainBinding.placaField.getText().toString()
+                    mainBinding.documentoField.getText().toString()
             );
         });
 
@@ -63,11 +64,9 @@ public class ConsultaPlacaActivity extends AppCompatActivity {
                     for ( DataSnapshot dado : snapshot.getChildren()){
                         OSModel osModel = dado.getValue(OSModel.class);
 
-                        if ( osModel != null && osModel.getPlacaCarro() != null){
-                            if (osModel.getPlacaCarro().toLowerCase().trim().equals(placa.toLowerCase().trim())){
-                                if ( !osModel.getExcluido()){
-                                    oss.add(osModel);
-                                }
+                        if ( osModel != null && osModel.getUsuarioModel() != null){
+                            if (osModel.getUsuarioModel().getDocumento().toLowerCase().trim().equals(placa.toLowerCase().trim())){
+                                oss.add(osModel);
                             }
                         }
 

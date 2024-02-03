@@ -39,7 +39,7 @@
 
         <provider
             android:name="androidx.core.content.FileProvider"
-            android:authorities="benicio.soluces.marioscar.provider"
+            android:authorities="benicio.soluces.mardiesel.provider"
             android:exported="false"
             android:grantUriPermissions="true">
             <meta-data
@@ -49,6 +49,8 @@
 
         <activity
             android:name=".ConsultaPlacaActivity"
+
+
             android:exported="false" />
         <activity
             android:name=".ExibidorDeOSActivity"
@@ -80,6 +82,8 @@
             android:theme="@style/Theme.MaterialComponents.Light.DarkActionBar" />
         <activity
             android:name=".MainActivity"
+
+
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

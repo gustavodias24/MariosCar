@@ -1,6 +1,7 @@
 package benicio.soluces.marioscar.adapters;
 
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.view.LayoutInflater;
@@ -24,10 +25,10 @@ import benicio.soluces.marioscar.R;
 import benicio.soluces.marioscar.SelecaoVeiculoClienteActivity;
 import benicio.soluces.marioscar.VeiculoActivity;
 import benicio.soluces.marioscar.model.UsuarioModel;
+import benicio.soluces.marioscar.utils.DatabaseUtils;
 
 public class AdapterCliente extends RecyclerView.Adapter<AdapterCliente.MyViewHolder> {
-
-    private DatabaseReference refClientes = FirebaseDatabase.getInstance().getReference().getRef().child("clientes");
+    private DatabaseReference refClientes = FirebaseDatabase.getInstance().getReference().getRef().child(DatabaseUtils.CLIENTES_DB);
     List<UsuarioModel> clientes;
     Context c;
     int t;
@@ -44,6 +45,7 @@ public class AdapterCliente extends RecyclerView.Adapter<AdapterCliente.MyViewHo
         return new MyViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.exibir_clientes, parent, false));
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
         UsuarioModel usuarioModel = clientes.get(position);

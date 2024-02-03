@@ -9,7 +9,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.annotation.SuppressLint;
 import android.os.Bundle;
-import android.view.Menu;
 import android.view.MenuItem;
 
 import com.google.firebase.database.DataSnapshot;
@@ -26,10 +25,11 @@ import benicio.soluces.marioscar.adapters.AdapterOS;
 import benicio.soluces.marioscar.databinding.ActivityExibidorDeOsactivityBinding;
 import benicio.soluces.marioscar.databinding.ActivitySelecaoVeiculoClienteBinding;
 import benicio.soluces.marioscar.model.OSModel;
+import benicio.soluces.marioscar.utils.DatabaseUtils;
 
 public class ExibidorDeOSActivity extends AppCompatActivity {
 
-    private DatabaseReference refOs = FirebaseDatabase.getInstance().getReference().getRef().child("os");
+    private DatabaseReference refOs = FirebaseDatabase.getInstance().getReference().getRef().child(DatabaseUtils.OS_DB);
     private ActivityExibidorDeOsactivityBinding mainBinding;
     private Bundle bundle;
     List<OSModel> listaOs = new ArrayList<>();
@@ -83,9 +83,7 @@ public class ExibidorDeOSActivity extends AppCompatActivity {
                         OSModel osModel = dado.getValue(OSModel.class);
                         assert osModel != null;
                         if ( osModel.getIdCarro().equals(bundle.getString("idCarro"))){
-                            if ( !osModel.getExcluido()){
-                                listaOs.add(osModel);
-                            }
+                            listaOs.add(osModel);
                         }
                     }
                     adapterOS.notifyDataSetChanged();

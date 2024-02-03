@@ -18,10 +18,11 @@ import java.util.UUID;
 import benicio.soluces.marioscar.databinding.ActivitySelecaoClienteBinding;
 import benicio.soluces.marioscar.databinding.ActivityVeiculoBinding;
 import benicio.soluces.marioscar.model.VeiculoModel;
+import benicio.soluces.marioscar.utils.DatabaseUtils;
 
 public class VeiculoActivity extends AppCompatActivity {
 
-    private DatabaseReference refVeiculos = FirebaseDatabase.getInstance().getReference().getRef().child("veiculos");
+    private DatabaseReference refVeiculos = FirebaseDatabase.getInstance().getReference().getRef().child(DatabaseUtils.VEICULOS_DB);
     private ActivityVeiculoBinding mainBinding;
     private Bundle b;
     @Override

@@ -10,7 +10,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.annotation.SuppressLint;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -30,13 +29,15 @@ import benicio.soluces.marioscar.databinding.ActivityClienteBinding;
 import benicio.soluces.marioscar.databinding.ActivityExibicaoBinding;
 import benicio.soluces.marioscar.model.OSModel;
 import benicio.soluces.marioscar.model.UsuarioModel;
+import benicio.soluces.marioscar.utils.DatabaseUtils;
 
 public class ExibicaoActivity extends AppCompatActivity {
 
     private ActivityExibicaoBinding mainBinding;
-    private DatabaseReference refOs = FirebaseDatabase.getInstance().getReference().getRef().child("os");
-    private DatabaseReference refClientes = FirebaseDatabase.getInstance().getReference().getRef().child("clientes");
+    private DatabaseReference refOs = FirebaseDatabase.getInstance().getReference().getRef().child(DatabaseUtils.OS_DB);
+    private DatabaseReference refClientes = FirebaseDatabase.getInstance().getReference().getRef().child(DatabaseUtils.CLIENTES_DB);
     private Bundle b;
+
     private int t;
     private RecyclerView r;
     AdapterOS adapterOS;
@@ -51,13 +52,15 @@ public class ExibicaoActivity extends AppCompatActivity {
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
 
         b = getIntent().getExtras();
-        String title = "";
+
         t = Objects.requireNonNull(b).getInt("t", 0);
 
-        switch (t){
+        String title = "";
+
+        switch (Objects.requireNonNull(b).getInt("t", 0)){
             case 666: //cliente
                 title = "Lista de clientes";
-                configurarListenerCliente();
+                configurarListenerCliente("");
                 break;
             case 1:
                 title = "Lista de os";
@@ -71,7 +74,6 @@ public class ExibicaoActivity extends AppCompatActivity {
 
         configurarRecyclerExibicao();
     }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -87,8 +89,10 @@ public class ExibicaoActivity extends AppCompatActivity {
 
             @Override
             public boolean onQueryTextChange(String newText) {
-                if ( t == 1){
+                if ( t == 1 ){
                     configurarListenerOS(newText.toLowerCase().trim());
+                }else{
+                    configurarListenerCliente(newText.toLowerCase().trim());
                 }
                 return true;
             }
@@ -97,17 +101,32 @@ public class ExibicaoActivity extends AppCompatActivity {
         return super.onCreateOptionsMenu(menu);
     }
 
-    private void configurarListenerCliente() {
-        refClientes.addValueEventListener(new ValueEventListener() {
+    private void configurarListenerCliente(String query){
+        refClientes.addListenerForSingleValueEvent(new ValueEventListener() {
             @SuppressLint("NotifyDataSetChanged")
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                if (snapshot.exists()){
+                if ( snapshot.exists() ){
                     listaClientes.clear();
                     for ( DataSnapshot dado : snapshot.getChildren()){
-                        UsuarioModel u = dado.getValue(UsuarioModel.class);
-                        listaClientes.add(u);
+                        UsuarioModel clienteModel = dado.getValue(UsuarioModel.class);
+                        if ( query.isEmpty() ){
+                            listaClientes.add(clienteModel);
+                        }else{
+                            assert clienteModel != null;
+                            if (
+                                    clienteModel.getNome().toLowerCase().trim().contains(query) ||
+                                            clienteModel.getCidade().toLowerCase().trim().contains(query) ||
+                                            clienteModel.getNome2().toLowerCase().trim().contains(query) ||
+                                            clienteModel.getEmail().toLowerCase().trim().contains(query) ||
+                                            clienteModel.getDocumento().toLowerCase().trim().contains(query) ||
+                                            clienteModel.getTelefone().toLowerCase().trim().contains(query)
+                            ){
+                                listaClientes.add(clienteModel);
+                            }
+                        }
                     }
+
                     adapterCliente.notifyDataSetChanged();
                 }
             }
@@ -144,7 +163,6 @@ public class ExibicaoActivity extends AppCompatActivity {
                     listaOs.clear();
                     for( DataSnapshot dado : snapshot.getChildren()){
                         OSModel osModel = dado.getValue(OSModel.class);
-                        if ( !osModel.getExcluido()){
                             if ( query.isEmpty() ){
                                 listaOs.add(osModel);
                             }else{
@@ -156,7 +174,6 @@ public class ExibicaoActivity extends AppCompatActivity {
                                     listaOs.add(osModel);
                                 }
                             }
-                        }
                     }
                     adapterOS.notifyDataSetChanged();
                 }

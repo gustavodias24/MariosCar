@@ -112,6 +112,15 @@
 
         </com.google.android.material.textfield.TextInputLayout>
 
+        <Button
+            android:id="@+id/calculo_resulado"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp"
+            android:backgroundTint="@color/red"
+            android:text="Calcular resultado total"
+            android:textColor="#F8F8F8" />
+
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/total_field"
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
@@ -126,81 +135,66 @@
 
         </com.google.android.material.textfield.TextInputLayout>
 
-        <Button
-            android:id="@+id/btn_calcular_tudo"
+        <CheckBox
+            android:id="@+id/cabecote"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="8dp"
-            android:layout_weight="1"
-            android:backgroundTint="@color/red"
-            android:text="Calcular tudo"
-            android:textColor="#F8F8F8" />
+            android:text="Cabeçote" />
 
         <CheckBox
-            android:id="@+id/bateria"
+            android:id="@+id/mancaisCabecote"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Bateria" />
+            android:text="Mancais do cabeçote" />
 
         <CheckBox
-            android:id="@+id/alarme"
+            android:id="@+id/comando"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Alarme" />
+            android:text="Comando" />
 
         <CheckBox
-            android:id="@+id/buzina"
+            android:id="@+id/gaiola"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Buzina" />
+            android:text="Gaiola" />
 
         <CheckBox
-            android:id="@+id/trava"
+            android:id="@+id/vela"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Trava" />
+            android:text="Vela" />
 
         <CheckBox
-            android:id="@+id/vidro"
+            android:id="@+id/bloco"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Vidro" />
+            android:text="Bloco" />
 
         <CheckBox
-            android:id="@+id/tapete"
+            android:id="@+id/mancaisBloco"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Tapete" />
+            android:text="Mancais do bloco" />
 
         <CheckBox
-            android:id="@+id/chaveRoda"
+            android:id="@+id/virabrequim"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Chave de roda" />
+            android:text="Virabrequim" />
 
         <CheckBox
-            android:id="@+id/macaco"
+            android:id="@+id/biela"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Macaco" />
+            android:text="Biela" />
 
         <CheckBox
-            android:id="@+id/triangulo"
+            android:id="@+id/motoMontado"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Triângulo" />
+            android:text="Motor montado" />
 
-        <CheckBox
-            android:id="@+id/extintor"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Extintor" />
-
-        <CheckBox
-            android:id="@+id/som"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Som" />
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/obs_field"
