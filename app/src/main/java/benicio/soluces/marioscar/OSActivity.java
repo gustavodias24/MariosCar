@@ -129,6 +129,7 @@ public class OSActivity extends AppCompatActivity {
             refOs.child(Objects.requireNonNull(b.getString("idOS"))).get().addOnCompleteListener(task -> {
                 if ( task.isSuccessful() ){
                     OSModel os = task.getResult().getValue(OSModel.class);
+                    mainBinding.numeroosField.getEditText().setText(os.getNumeroOs());
                     mainBinding.descricaoField.getEditText().setText(os.getDescricao());
                     mainBinding.descricaoPeAField.getEditText().setText(os.getDescricaoPeca());
                     mainBinding.valorTotalPecasField.getEditText().setText(os.getValorTotalPecas());
@@ -231,6 +232,16 @@ public class OSActivity extends AppCompatActivity {
 
                             VeiculoModel veiculo = task1.getResult().getValue(VeiculoModel.class);
 
+                            String numeroOsOficial = "";
+
+                            String numeroOSdigitada = mainBinding.numeroosField.getEditText().getText().toString();
+
+                            if ( !numeroOSdigitada.isEmpty() ){
+                                numeroOsOficial = padWithZeros(numeroOSdigitada, 6);
+                            }else{
+                                numeroOsOficial = padWithZeros(numeroOs+"" , 6);
+                            }
+
                             if (cliente != null && veiculo != null){
                                 refOs.child(id).setValue(
                                         new OSModel(
@@ -249,7 +260,7 @@ public class OSActivity extends AppCompatActivity {
                                                 imagesLink,
                                                 itens,
                                                 servicos,
-                                                padWithZeros(numeroOs+"" , 6),
+                                                numeroOsOficial,
                                                 dateFormat.format(currentDate),
                                                 mainBinding.cabecote.isChecked(),
                                                 mainBinding.mancaisCabecote.isChecked(),
