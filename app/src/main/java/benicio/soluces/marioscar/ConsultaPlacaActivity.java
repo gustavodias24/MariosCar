@@ -45,10 +45,15 @@ public class ConsultaPlacaActivity extends AppCompatActivity {
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
         mainBinding.consultar.setOnClickListener( view -> {
-            Toast.makeText(this, "Consultando...", Toast.LENGTH_SHORT).show();
-            consultar(
-                    mainBinding.documentoField.getText().toString()
-            );
+            if ( mainBinding.documentoField.getText().toString().isEmpty()) {
+                Toast.makeText(this, "Escreva Algo!", Toast.LENGTH_SHORT).show();
+            }else{
+                Toast.makeText(this, "Consultando...", Toast.LENGTH_SHORT).show();
+                consultar(
+                        mainBinding.documentoField.getText().toString()
+                );
+            }
+
         });
 
         configurarRecyclerExibicao();
