@@ -55,7 +55,7 @@
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recycler_pecas"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="wrap_content" />
 
         <Button
             android:id="@+id/adicionar_servico"
@@ -69,7 +69,7 @@
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recycler_servicos"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" >
+            android:layout_height="wrap_content">
 
         </androidx.recyclerview.widget.RecyclerView>
 
@@ -230,7 +230,7 @@
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recycler_fotos"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:padding="8dp" />
 
@@ -241,6 +241,251 @@
             android:backgroundTint="@color/red"
             android:text="Selecionar foto"
             android:textColor="#F8F8F8" />
+
+        <TextView
+            
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="Aguardando Orçamento"
+            android:textSize="24sp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <com.vicmikhailau.maskededittext.MaskedEditText
+                android:id="@+id/hora_aguardando_orçamento"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:hint="Hora"
+                android:inputType="number|numberDecimal|numberSigned"
+                app:mask="##:##" />
+
+            <com.vicmikhailau.maskededittext.MaskedEditText
+                android:id="@+id/data_aguardando_orçamento"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:hint="Data"
+                android:inputType="number|numberDecimal|numberSigned"
+                app:mask="##/##/####" />
+        </LinearLayout>
+
+
+        <TextView
+            
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="Aguardando Autorização"
+            android:textSize="24sp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <com.vicmikhailau.maskededittext.MaskedEditText
+                android:id="@+id/hora_aguardando_autorizacao"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:hint="Hora"
+                android:inputType="number|numberDecimal|numberSigned"
+                app:mask="##:##" />
+
+            <com.vicmikhailau.maskededittext.MaskedEditText
+                android:id="@+id/data_aguardando_autorizacao"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:hint="Data"
+                android:inputType="number|numberDecimal|numberSigned"
+                app:mask="##/##/####" />
+        </LinearLayout>
+
+
+        <TextView
+            
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="Serviço Autorizado"
+            android:textSize="24sp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <com.vicmikhailau.maskededittext.MaskedEditText
+                android:id="@+id/hora_servico_autorizado"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:hint="Hora"
+                android:inputType="number|numberDecimal|numberSigned"
+                app:mask="##:##" />
+
+            <com.vicmikhailau.maskededittext.MaskedEditText
+                android:id="@+id/data_servico_autorizado"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:hint="Data"
+                android:inputType="number|numberDecimal|numberSigned"
+                app:mask="##/##/####" />
+        </LinearLayout>
+
+
+        <TextView
+            
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="Serviço em Execução"
+            android:textSize="24sp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <com.vicmikhailau.maskededittext.MaskedEditText
+                android:id="@+id/hora_servico_execucao"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:hint="Hora"
+                android:inputType="number|numberDecimal|numberSigned"
+                app:mask="##:##" />
+
+            <com.vicmikhailau.maskededittext.MaskedEditText
+                android:id="@+id/data_servico_execucao"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:hint="Data"
+                android:inputType="number|numberDecimal|numberSigned"
+                app:mask="##/##/####" />
+        </LinearLayout>
+
+
+        <TextView
+            
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="Serviço Concluído"
+            android:textSize="24sp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <com.vicmikhailau.maskededittext.MaskedEditText
+                android:id="@+id/hora_servico_concluido"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:hint="Hora"
+                android:inputType="number|numberDecimal|numberSigned"
+                app:mask="##:##" />
+
+            <com.vicmikhailau.maskededittext.MaskedEditText
+                android:id="@+id/data_servico_concluido"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:hint="Data"
+                android:inputType="number|numberDecimal|numberSigned"
+                app:mask="##/##/####" />
+        </LinearLayout>
+
+
+        <TextView
+            
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="Saiu para Entrega"
+            android:textSize="24sp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <com.vicmikhailau.maskededittext.MaskedEditText
+                android:id="@+id/hora_saiu"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:hint="Hora"
+                android:inputType="number|numberDecimal|numberSigned"
+                app:mask="##:##" />
+
+            <com.vicmikhailau.maskededittext.MaskedEditText
+                android:id="@+id/data_saiu"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:hint="Data"
+                android:inputType="number|numberDecimal|numberSigned"
+                app:mask="##/##/####" />
+        </LinearLayout>
+
+
+        <TextView
+
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="Entregue"
+            android:textSize="24sp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <com.vicmikhailau.maskededittext.MaskedEditText
+                android:id="@+id/hora_entrega"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:hint="Hora"
+                android:inputType="number|numberDecimal|numberSigned"
+                app:mask="##:##" />
+
+            <com.vicmikhailau.maskededittext.MaskedEditText
+                android:id="@+id/data_entrega"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:hint="Data"
+                android:inputType="number|numberDecimal|numberSigned"
+                app:mask="##/##/####" />
+
+        </LinearLayout>
 
         <Button
             android:id="@+id/cadastrar"

@@ -10,8 +10,8 @@ import benicio.soluces.marioscar.utils.MathUtils;
 public class OSModel {
 
     Boolean deletado = false;
-    String id, idCarro, idCliente,placaCarro, descricao, descricaoPeca, valorTotal, valorService, desconto, total,obs, valorTotalPecas;
-    List<String>  fotos = new ArrayList<>();
+    String id, idCarro, idCliente, placaCarro, descricao, descricaoPeca, valorTotal, valorService, desconto, total, obs, valorTotalPecas;
+    List<String> fotos = new ArrayList<>();
     List<ItemModel> itens = new ArrayList<>();
     List<ItemModel> servicos = new ArrayList<>();
 
@@ -22,10 +22,53 @@ public class OSModel {
     VeiculoModel veiculoModel;
     UsuarioModel usuarioModel;
 
+    String aguardandoOrcamentoHoraData = "";
+    String aguardandoAutorizacaoHoraData = "";
+    String servicoAutorizadoHoraData = "";
+    String servicoEmExecucaoHoraData = "";
+    String servicoConcluidoHoraData = "";
+    String saiuParaEntregaHoraData = "";
+    String entregueHoraData = "";
+
     public OSModel() {
     }
 
-    public OSModel(String id, String idCarro, String idCliente, String placaCarro, String descricao, String descricaoPeca, String valorTotal, String valorService, String desconto, String total, String obs, String valorTotalPecas, List<String> fotos, List<ItemModel> itens, List<ItemModel> servicos, String numeroOs, String data, Boolean cabecote, Boolean mancaisCabecote, Boolean comando, Boolean gaiola, Boolean vela, Boolean bloco, Boolean mancaisBloco, Boolean virabrequim, Boolean biela, Boolean motorMontado, VeiculoModel veiculoModel, UsuarioModel usuarioModel) {
+    public OSModel(String id,
+                   String idCarro,
+                   String idCliente,
+                   String placaCarro,
+                   String descricao,
+                   String descricaoPeca,
+                   String valorTotal,
+                   String valorService,
+                   String desconto,
+                   String total,
+                   String obs,
+                   String valorTotalPecas,
+                   List<String> fotos,
+                   List<ItemModel> itens,
+                   List<ItemModel> servicos,
+                   String numeroOs,
+                   String data,
+                   Boolean cabecote,
+                   Boolean mancaisCabecote,
+                   Boolean comando, Boolean gaiola,
+                   Boolean vela,
+                   Boolean bloco,
+                   Boolean mancaisBloco,
+                   Boolean virabrequim,
+                   Boolean biela,
+                   Boolean motorMontado,
+                   VeiculoModel veiculoModel,
+                   UsuarioModel usuarioModel,
+                   String aguardandoOrcamentoHoraData,
+                   String aguardandoAutorizacaoHoraData,
+                   String servicoAutorizadoHoraData,
+                   String servicoEmExecucaoHoraData,
+                   String servicoConcluidoHoraData,
+                   String saiuParaEntregaHoraData,
+                   String entregueHoraData
+    ) {
         this.id = id;
         this.idCarro = idCarro;
         this.idCliente = idCliente;
@@ -55,6 +98,69 @@ public class OSModel {
         this.motorMontado = motorMontado;
         this.veiculoModel = veiculoModel;
         this.usuarioModel = usuarioModel;
+        this.aguardandoOrcamentoHoraData = aguardandoOrcamentoHoraData;
+        this.aguardandoAutorizacaoHoraData = aguardandoAutorizacaoHoraData;
+        this.servicoAutorizadoHoraData = servicoAutorizadoHoraData;
+        this.servicoEmExecucaoHoraData = servicoEmExecucaoHoraData;
+        this.servicoConcluidoHoraData = servicoConcluidoHoraData;
+        this.saiuParaEntregaHoraData = saiuParaEntregaHoraData;
+        this.entregueHoraData = entregueHoraData;
+    }
+
+    public String getAguardandoOrcamentoHoraData() {
+        return aguardandoOrcamentoHoraData;
+    }
+
+    public void setAguardandoOrcamentoHoraData(String aguardandoOrcamentoHoraData) {
+        this.aguardandoOrcamentoHoraData = aguardandoOrcamentoHoraData;
+    }
+
+    public String getAguardandoAutorizacaoHoraData() {
+        return aguardandoAutorizacaoHoraData;
+    }
+
+    public void setAguardandoAutorizacaoHoraData(String aguardandoAutorizacaoHoraData) {
+        this.aguardandoAutorizacaoHoraData = aguardandoAutorizacaoHoraData;
+    }
+
+    public String getServicoAutorizadoHoraData() {
+        return servicoAutorizadoHoraData;
+    }
+
+    public void setServicoAutorizadoHoraData(String servicoAutorizadoHoraData) {
+        this.servicoAutorizadoHoraData = servicoAutorizadoHoraData;
+    }
+
+    public String getServicoEmExecucaoHoraData() {
+        return servicoEmExecucaoHoraData;
+    }
+
+    public void setServicoEmExecucaoHoraData(String servicoEmExecucaoHoraData) {
+        this.servicoEmExecucaoHoraData = servicoEmExecucaoHoraData;
+    }
+
+    public String getServicoConcluidoHoraData() {
+        return servicoConcluidoHoraData;
+    }
+
+    public void setServicoConcluidoHoraData(String servicoConcluidoHoraData) {
+        this.servicoConcluidoHoraData = servicoConcluidoHoraData;
+    }
+
+    public String getSaiuParaEntregaHoraData() {
+        return saiuParaEntregaHoraData;
+    }
+
+    public void setSaiuParaEntregaHoraData(String saiuParaEntregaHoraData) {
+        this.saiuParaEntregaHoraData = saiuParaEntregaHoraData;
+    }
+
+    public String getEntregueHoraData() {
+        return entregueHoraData;
+    }
+
+    public void setEntregueHoraData(String entregueHoraData) {
+        this.entregueHoraData = entregueHoraData;
     }
 
     public Boolean getDeletado() {
@@ -72,45 +178,39 @@ public class OSModel {
         StringBuilder itensString = new StringBuilder("");
         StringBuilder servicosString = new StringBuilder("");
 
-        if ( !itens.isEmpty() ){
+        if (!itens.isEmpty()) {
             itensString.append("\nDescrição peça:").append('\n');
-            for ( ItemModel item : itens){
+            for (ItemModel item : itens) {
                 Float valorTotal = (float) (MathUtils.converterParaDouble(item.getValor()) * item.getQuantidade());
-                itensString.append(
-                        String.format("%s R$ %s X%.2f R$ %.2f", item.getNomeProduto(), item.getValor(), item.getQuantidade(), valorTotal)
-                ).append('\n');
+                itensString.append(String.format("%s R$ %s X%.2f R$ %.2f", item.getNomeProduto(), item.getValor(), item.getQuantidade(), valorTotal)).append('\n');
             }
         }
 
-        if ( !servicos.isEmpty() ){
+        if (!servicos.isEmpty()) {
             servicosString.append("\nDescrição serviço:").append('\n');
-            for ( ItemModel item : servicos){
-                servicosString.append(
-                        String.format("%s R$ %s ", item.getNomeProduto(), item.getValor())
-                ).append('\n');
+            for (ItemModel item : servicos) {
+                servicosString.append(String.format("%s R$ %s ", item.getNomeProduto(), item.getValor())).append('\n');
             }
         }
+        StringBuilder dataAndHoras = new StringBuilder();
+        dataAndHoras.append("\n\n")
+                .append("Aguardando Orçamento: ").append(this.aguardandoOrcamentoHoraData)
+                .append("\n")
+                .append("Aguardando Autorização: ").append(this.aguardandoAutorizacaoHoraData)
+                .append("\n")
+                .append("Serviço Autorizado: ").append(this.servicoAutorizadoHoraData)
+                .append("\n")
+                .append("Serviço em Execução: ").append(this.servicoEmExecucaoHoraData)
+                .append("\n")
+                .append("Serviço Concluído: ").append(this.servicoConcluidoHoraData)
+                .append("\n")
+                .append("Saiu para Entrega: ").append(this.saiuParaEntregaHoraData)
+                .append("\n")
+                .append("Entregue: ").append(this.entregueHoraData)
+        ;
 
 
-        return  "Número da OS: " + numeroOs + '\n' +
-                "Data: " + data + '\n' +
-                itensString +
-                servicosString +
-                "\nValor total das peças: R$" + valorTotalPecas + '\n' +
-                "Valor total dos serviços: R$ " + valorService + '\n' +
-                "Desconto: R$ " + desconto + '\n' +
-                "Total: R$ " + total + '\n' +
-                "Obs: " + obs + '\n' +
-                "\nCabeçote: " + (cabecote ? "Sim" : "Não") +
-                "\nMancais do cabeçote: " + (mancaisCabecote ? "Sim" : "Não") +
-                "\nComando: " + (comando ? "Sim" : "Não") +
-                "\nGaiola: " + (gaiola ? "Sim" : "Não") +
-                "\nVela: " + (vela ? "Sim" : "Não") +
-                "\nBloco: " + (bloco ? "Sim" : "Não") +
-                "\nMancais do bloco: " + (mancaisBloco ? "Sim" : "Não") +
-                "\nVirabrequim: " + (virabrequim ? "Sim" : "Não") +
-                "\nBiela: " + (biela ? "Sim" : "Não") +
-                "\nMotor montado: " + (motorMontado ? "Sim" : "Não") ;
+        return "Número da OS: " + numeroOs + '\n' + "Data: " + data + '\n' + itensString + servicosString + "\nValor total das peças: R$" + valorTotalPecas + '\n' + "Valor total dos serviços: R$ " + valorService + '\n' + "Desconto: R$ " + desconto + '\n' + "Total: R$ " + total + '\n' + "Obs: " + obs + '\n' + "\nCabeçote: " + (cabecote ? "Sim" : "Não") + "\nMancais do cabeçote: " + (mancaisCabecote ? "Sim" : "Não") + "\nComando: " + (comando ? "Sim" : "Não") + "\nGaiola: " + (gaiola ? "Sim" : "Não") + "\nVela: " + (vela ? "Sim" : "Não") + "\nBloco: " + (bloco ? "Sim" : "Não") + "\nMancais do bloco: " + (mancaisBloco ? "Sim" : "Não") + "\nVirabrequim: " + (virabrequim ? "Sim" : "Não") + "\nBiela: " + (biela ? "Sim" : "Não") + "\nMotor montado: " + (motorMontado ? "Sim" : "Não") + dataAndHoras;
     }
 
     public VeiculoModel getVeiculoModel() {

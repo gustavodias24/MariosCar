@@ -99,7 +99,8 @@ public class AdapterOS extends RecyclerView.Adapter<AdapterOS.MyViewHolder> {
         holder.r.setHasFixedSize(true);
         holder.r.setAdapter(new AdapterImages(osModel.getFotos(),c,a));
 
-        holder.layoutAdmin.setVisibility(View.GONE);
+        //mudar isso aqui quando mudar de versao
+//        holder.layoutAdmin.setVisibility(View.GONE);
 
         holder.editarOS.setOnClickListener( view -> {
             Intent i = new Intent(c, OSActivity.class);

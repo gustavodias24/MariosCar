@@ -71,14 +71,16 @@ import retrofit2.Retrofit;
 
 public class OSActivity extends AppCompatActivity {
 
-    String idCarro ;
-    String placaCarro ;
-    String idCliente ;
+    String aguardandoOrcamento = "", aguardandoAutorizacao = "", servicoAutorizado = "", servicoExecucao = "", servicoConcluido = "", saiuEntrega = "", entregue = "";
+
+    String idCarro;
+    String placaCarro;
+    String idCliente;
     private DatabaseReference refClientes = FirebaseDatabase.getInstance().getReference().getRef().child(DatabaseUtils.CLIENTES_DB);
     private DatabaseReference refVeiculos = FirebaseDatabase.getInstance().getReference().getRef().child(DatabaseUtils.VEICULOS_DB);
     private DatabaseReference refOs = FirebaseDatabase.getInstance().getReference().getRef().child(DatabaseUtils.OS_DB);
 
-    private Dialog  dialogSelecionarFoto;
+    private Dialog dialogSelecionarFoto;
     private static final int REQUEST_IMAGE_CAPTURE = 1;
 
     private static final int PICK_IMAGE_REQUEST = 2;
@@ -124,10 +126,10 @@ public class OSActivity extends AppCompatActivity {
         configurarDialogCarregando();
         configurarDialogSelecionarFoto();
 
-        if ( b.getBoolean("isEdit", false)){
+        if (b.getBoolean("isEdit", false)) {
             mainBinding.cadastrar.setText("Conluir a edição");
             refOs.child(Objects.requireNonNull(b.getString("idOS"))).get().addOnCompleteListener(task -> {
-                if ( task.isSuccessful() ){
+                if (task.isSuccessful()) {
                     OSModel os = task.getResult().getValue(OSModel.class);
                     mainBinding.numeroosField.getEditText().setText(os.getNumeroOs());
                     mainBinding.descricaoField.getEditText().setText(os.getDescricao());
@@ -137,6 +139,49 @@ public class OSActivity extends AppCompatActivity {
                     mainBinding.descontoField.getEditText().setText(os.getDesconto());
                     mainBinding.totalField.getEditText().setText(os.getTotal());
                     mainBinding.obsField.getEditText().setText(os.getObs());
+
+                    try {
+                        mainBinding.dataAguardandoOrAmento.setText(os.getAguardandoOrcamentoHoraData().split("às")[0]);
+                        mainBinding.horaAguardandoOrAmento.setText(os.getAguardandoOrcamentoHoraData().split("às")[1]);
+                    } catch (Exception ignored) {
+                    }
+
+                    try {
+                        mainBinding.dataAguardandoAutorizacao.setText(os.getAguardandoAutorizacaoHoraData().split("às")[0]);
+                        mainBinding.horaAguardandoAutorizacao.setText(os.getAguardandoAutorizacaoHoraData().split("às")[1]);
+                    } catch (Exception ignored) {
+                    }
+
+                    try {
+                        mainBinding.dataServicoAutorizado.setText(os.getServicoAutorizadoHoraData().split("às")[0]);
+                        mainBinding.horaServicoAutorizado.setText(os.getServicoAutorizadoHoraData().split("às")[1]);
+                    } catch (Exception ignored) {
+                    }
+
+                    try {
+                        mainBinding.dataServicoExecucao.setText(os.getServicoEmExecucaoHoraData().split("às")[0]);
+                        mainBinding.horaServicoExecucao.setText(os.getServicoEmExecucaoHoraData().split("às")[1]);
+                    } catch (Exception ignored) {
+                    }
+
+                    try {
+                        mainBinding.dataServicoConcluido.setText(os.getServicoConcluidoHoraData().split("às")[0]);
+                        mainBinding.horaServicoConcluido.setText(os.getServicoConcluidoHoraData().split("às")[1]);
+                    } catch (Exception ignored) {
+                    }
+
+                    try {
+                        mainBinding.dataSaiu.setText(os.getSaiuParaEntregaHoraData().split("às")[0]);
+                        mainBinding.horaSaiu.setText(os.getSaiuParaEntregaHoraData().split("às")[1]);
+                    } catch (Exception ignored) {
+                    }
+
+                    try {
+                        mainBinding.dataEntrega.setText(os.getEntregueHoraData().split("às")[0]);
+                        mainBinding.horaEntrega.setText(os.getEntregueHoraData().split("às")[1]);
+                    } catch (Exception ignored) {
+                    }
+
 
                     imagesLink.addAll(os.getFotos());
                     adapterImages.notifyDataSetChanged();
@@ -161,7 +206,7 @@ public class OSActivity extends AppCompatActivity {
                     placaCarro = os.getPlacaCarro();
                     numeroOs = Integer.parseInt(os.getNumeroOs());
 
-                }else{
+                } else {
                     Toast.makeText(OSActivity.this, "Erro de conexão!", Toast.LENGTH_SHORT).show();
                     finish();
                 }
@@ -169,13 +214,13 @@ public class OSActivity extends AppCompatActivity {
 
         }
 
-       refOs.addListenerForSingleValueEvent(new ValueEventListener() {
+        refOs.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                if (numeroOs == 0){
+                if (numeroOs == 0) {
                     numeroOs = 1;
-                    if ( snapshot.exists() ){
-                        for ( DataSnapshot d : snapshot.getChildren()){
+                    if (snapshot.exists()) {
+                        for (DataSnapshot d : snapshot.getChildren()) {
                             numeroOs++;
                         }
 
@@ -190,22 +235,22 @@ public class OSActivity extends AppCompatActivity {
             }
         });
 
-       mainBinding.cadastrar.setOnClickListener(view -> {
+        mainBinding.cadastrar.setOnClickListener(view -> {
             dialogCarregando.show();
             Toast.makeText(this, "Aguarde!", Toast.LENGTH_SHORT).show();
 
-            if ( !b.getBoolean("isEdit", false)){
+            if (!b.getBoolean("isEdit", false)) {
                 id = Base64.getEncoder().encodeToString(
                         UUID.randomUUID().toString().getBytes()
                 );
-            }else{
+            } else {
                 id = b.getString("idOS");
             }
 
-            if ( idCliente == null && placaCarro == null && placaCarro == null){
-                 idCarro = b.getString("idCarro", "");
-                 placaCarro = b.getString("placaCarro", "");
-                 idCliente = b.getString("idCliente", "");
+            if (idCliente == null && placaCarro == null && placaCarro == null) {
+                idCarro = b.getString("idCarro", "");
+                placaCarro = b.getString("placaCarro", "");
+                idCliente = b.getString("idCliente", "");
             }
 
 
@@ -220,15 +265,38 @@ public class OSActivity extends AppCompatActivity {
             obs = mainBinding.obsField.getEditText().getText().toString();
 
 
+            if (!mainBinding.dataAguardandoOrAmento.getText().toString().isEmpty() && !mainBinding.horaAguardandoOrAmento.getText().toString().isEmpty()) {
+                aguardandoOrcamento = mainBinding.dataAguardandoOrAmento.getText().toString() + " às " + mainBinding.horaAguardandoOrAmento.getText().toString();
+            }
+            if (!mainBinding.dataAguardandoAutorizacao.getText().toString().isEmpty() && !mainBinding.horaAguardandoAutorizacao.getText().toString().isEmpty()) {
+                aguardandoAutorizacao = mainBinding.dataAguardandoAutorizacao.getText().toString() + " às " + mainBinding.horaAguardandoAutorizacao.getText().toString();
+            }
+            if (!mainBinding.dataServicoAutorizado.getText().toString().isEmpty() && !mainBinding.horaServicoAutorizado.getText().toString().isEmpty()) {
+                servicoAutorizado = mainBinding.dataServicoAutorizado.getText().toString() + " às " + mainBinding.horaServicoAutorizado.getText().toString();
+            }
+            if (!mainBinding.dataServicoExecucao.getText().toString().isEmpty() && !mainBinding.horaServicoExecucao.getText().toString().isEmpty()) {
+                servicoExecucao = mainBinding.dataServicoExecucao.getText().toString() + " às " + mainBinding.horaServicoExecucao.getText().toString();
+            }
+            if (!mainBinding.dataServicoConcluido.getText().toString().isEmpty() && !mainBinding.horaServicoConcluido.getText().toString().isEmpty()) {
+                servicoConcluido = mainBinding.dataServicoConcluido.getText().toString() + " às " + mainBinding.horaServicoConcluido.getText().toString();
+            }
+            if (!mainBinding.dataSaiu.getText().toString().isEmpty() && !mainBinding.horaSaiu.getText().toString().isEmpty()) {
+                saiuEntrega = mainBinding.dataSaiu.getText().toString() + " às " + mainBinding.horaSaiu.getText().toString();
+            }
+            if (!mainBinding.dataEntrega.getText().toString().isEmpty() && !mainBinding.horaEntrega.getText().toString().isEmpty()) {
+                entregue = mainBinding.dataEntrega.getText().toString() + " às " + mainBinding.horaEntrega.getText().toString();
+            }
+
+
             Date currentDate = new Date();
             SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
 
             refClientes.child(idCliente).get().addOnCompleteListener(task -> {
-                if ( task.isSuccessful() ){
+                if (task.isSuccessful()) {
                     UsuarioModel cliente = task.getResult().getValue(UsuarioModel.class);
                     refVeiculos.child(idCarro).get().addOnCompleteListener(task1 -> {
 
-                        if ( task1.isSuccessful() ){
+                        if (task1.isSuccessful()) {
 
                             VeiculoModel veiculo = task1.getResult().getValue(VeiculoModel.class);
 
@@ -236,13 +304,13 @@ public class OSActivity extends AppCompatActivity {
 
                             String numeroOSdigitada = mainBinding.numeroosField.getEditText().getText().toString();
 
-                            if ( !numeroOSdigitada.isEmpty() ){
+                            if (!numeroOSdigitada.isEmpty()) {
                                 numeroOsOficial = padWithZeros(numeroOSdigitada, 6);
-                            }else{
-                                numeroOsOficial = padWithZeros(numeroOs+"" , 6);
+                            } else {
+                                numeroOsOficial = padWithZeros(numeroOs + "", 6);
                             }
 
-                            if (cliente != null && veiculo != null){
+                            if (cliente != null && veiculo != null) {
                                 refOs.child(id).setValue(
                                         new OSModel(
                                                 id,
@@ -271,77 +339,90 @@ public class OSActivity extends AppCompatActivity {
                                                 mainBinding.mancaisBloco.isChecked(),
                                                 mainBinding.virabrequim.isChecked(),
                                                 mainBinding.biela.isChecked(),
-                                                mainBinding.motoMontado.isChecked(),veiculo,
-                                                cliente
+                                                mainBinding.motoMontado.isChecked(), veiculo,
+                                                cliente,
+                                                aguardandoOrcamento,
+                                                aguardandoAutorizacao,
+                                                servicoAutorizado,
+                                                servicoExecucao,
+                                                servicoConcluido,
+                                                saiuEntrega,
+                                                entregue
                                         )
                                 ).addOnCompleteListener(task2 -> {
-                                    if ( task2.isSuccessful() ){
+                                    if (task2.isSuccessful()) {
                                         finish();
                                         startActivity(new Intent(getApplicationContext(), MainActivity.class));
-                                        if ( !b.getBoolean("isEdit", false)){
+                                        if (!b.getBoolean("isEdit", false)) {
                                             Toast.makeText(getApplicationContext(), "OS cadastrada com sucesso.", Toast.LENGTH_LONG).show();
-                                        }else{
+                                        } else {
                                             Toast.makeText(getApplicationContext(), "OS atualizada com sucesso.", Toast.LENGTH_LONG).show();
                                         }
-                                    }else{
+                                    } else {
                                         Toast.makeText(getApplicationContext(), "Erro de conexão, tente novamente.", Toast.LENGTH_LONG).show();
                                         dialogCarregando.dismiss();
                                     }
                                 });
-                            }else{
+                            } else {
                                 Toast.makeText(this, "Tente novamente...", Toast.LENGTH_SHORT).show();
                             }
 
-                        }else{
+                        } else {
                             Toast.makeText(OSActivity.this, "Problema de conexão", Toast.LENGTH_SHORT).show();
                         }
                     });
-                }else{
+                } else {
                     Toast.makeText(OSActivity.this, "Problema de conexão", Toast.LENGTH_SHORT).show();
                 }
             });
         });
 
-       mainBinding.selecionarFoto.setOnClickListener( view -> {
+        mainBinding.selecionarFoto.setOnClickListener(view -> {
             dialogSelecionarFoto.show();
-       });
+        });
 
-       mainBinding.adicionarPeca.setOnClickListener( view -> {
-           dialogAdicionarItem.show();
-       });
+        mainBinding.adicionarPeca.setOnClickListener(view -> {
+            dialogAdicionarItem.show();
+        });
 
-       mainBinding.adicionarServico.setOnClickListener( view -> {
-           dialogAdicionarServico.show();
-       });
+        mainBinding.adicionarServico.setOnClickListener(view -> {
+            dialogAdicionarServico.show();
+        });
 
-       mainBinding.calculoResulado.setOnClickListener( view -> {
-           AlertDialog.Builder b = new AlertDialog.Builder(this);
-           b.setTitle("Confirme");
+        mainBinding.calculoResulado.setOnClickListener(view -> {
+            AlertDialog.Builder b = new AlertDialog.Builder(this);
+            b.setTitle("Confirme");
 
-           totalPecaString = mainBinding.valorTotalPecasField.getEditText().getText().toString();
-           totalServicoString = mainBinding.valorServicoField.getEditText().getText().toString();
-           descontoString = mainBinding.descontoField.getEditText().getText().toString();
+            totalPecaString = mainBinding.valorTotalPecasField.getEditText().getText().toString();
+            totalServicoString = mainBinding.valorServicoField.getEditText().getText().toString();
+            descontoString = mainBinding.descontoField.getEditText().getText().toString();
 
-           if ( totalPecaString.isEmpty() ){ totalPecaString = "0"; }
-           if ( totalServicoString.isEmpty() ){ totalServicoString = "0"; }
-           if ( descontoString.isEmpty() ){ descontoString = "0"; }
+            if (totalPecaString.isEmpty()) {
+                totalPecaString = "0";
+            }
+            if (totalServicoString.isEmpty()) {
+                totalServicoString = "0";
+            }
+            if (descontoString.isEmpty()) {
+                descontoString = "0";
+            }
 
-           b.setMessage(String.format(" R$ %s + R$ %s - R$ %s", totalPecaString, totalServicoString, descontoString));
-           b.setNegativeButton("Cancelar", null);
-           b.setPositiveButton("Confirmar", (dialogInterface, i) -> {
+            b.setMessage(String.format(" R$ %s + R$ %s - R$ %s", totalPecaString, totalServicoString, descontoString));
+            b.setNegativeButton("Cancelar", null);
+            b.setPositiveButton("Confirmar", (dialogInterface, i) -> {
 
-               Double resultado = MathUtils.converterParaDouble(totalPecaString) + MathUtils.converterParaDouble(totalServicoString) - MathUtils.converterParaDouble(descontoString);
+                Double resultado = MathUtils.converterParaDouble(totalPecaString) + MathUtils.converterParaDouble(totalServicoString) - MathUtils.converterParaDouble(descontoString);
 
-               String resultadoFormatado = MathUtils.formatarMoeda(resultado);
+                String resultadoFormatado = MathUtils.formatarMoeda(resultado);
 
-               mainBinding.totalField.getEditText().setText(resultadoFormatado);
-               Toast.makeText(this, "Resultado total: " + resultadoFormatado, Toast.LENGTH_SHORT).show();
-               dfm.dismiss();
-           });
+                mainBinding.totalField.getEditText().setText(resultadoFormatado);
+                Toast.makeText(this, "Resultado total: " + resultadoFormatado, Toast.LENGTH_SHORT).show();
+                dfm.dismiss();
+            });
 
-           dfm = b.create();
-           dfm.show();
-       });
+            dfm = b.create();
+            dfm.show();
+        });
 
         configurarRecyclerImages();
         configurarRecyclerItens();
@@ -355,12 +436,12 @@ public class OSActivity extends AppCompatActivity {
         SelectCameraOrGaleryLayoutBinding cameraOrGalery = SelectCameraOrGaleryLayoutBinding.inflate(getLayoutInflater());
         b.setTitle("Selecione: ");
 
-        cameraOrGalery.btnCamera.setOnClickListener( view -> {
+        cameraOrGalery.btnCamera.setOnClickListener(view -> {
             baterFoto();
             dialogSelecionarFoto.dismiss();
         });
 
-        cameraOrGalery.btnGaleria.setOnClickListener( view -> {
+        cameraOrGalery.btnGaleria.setOnClickListener(view -> {
             Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
             startActivityForResult(intent, PICK_IMAGE_REQUEST);
             dialogSelecionarFoto.dismiss();
@@ -389,7 +470,7 @@ public class OSActivity extends AppCompatActivity {
     }
 
     @SuppressLint("NotifyDataSetChanged")
-    private void configurarDialogProduto(){
+    private void configurarDialogProduto() {
         AlertDialog.Builder b = new AlertDialog.Builder(OSActivity.this);
         b.setTitle("Adicionar peça");
         LayoutAdicionarItemBinding adicionarItemBinding = LayoutAdicionarItemBinding.inflate(getLayoutInflater());
@@ -426,17 +507,17 @@ public class OSActivity extends AppCompatActivity {
 
         adicionarItemBinding.nomeField.setAdapter(adapter);
 
-        adicionarItemBinding.nomeField.setOnClickListener( view -> adicionarItemBinding.nomeField.showDropDown());
+        adicionarItemBinding.nomeField.setOnClickListener(view -> adicionarItemBinding.nomeField.showDropDown());
 
         adicionarItemBinding.nomeField.setOnItemClickListener((parent, view, position, id) -> {
             String selectedFrase = (String) parent.getItemAtPosition(position);
             adicionarItemBinding.nomeField.setText(selectedFrase);
 
             // Você pode fazer qualquer coisa com a frase selecionada aqui
-            Toast.makeText(getApplicationContext(),  selectedFrase + " selecionado!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplicationContext(), selectedFrase + " selecionado!", Toast.LENGTH_SHORT).show();
         });
 
-        adicionarItemBinding.adicionarPeca.setOnClickListener( view -> {
+        adicionarItemBinding.adicionarPeca.setOnClickListener(view -> {
             String nomePeca = adicionarItemBinding.nomeField.getText().toString();
             String quantidadeString = adicionarItemBinding.quantiadeField.getEditText().getText().toString();
             String precoString = adicionarItemBinding.valorField.getEditText().getText().toString();
@@ -452,9 +533,9 @@ public class OSActivity extends AppCompatActivity {
             String valorAtual = mainBinding.valorTotalPecasField.getEditText().getText().toString().trim().replace("R$", "");
             String valorAtualCerto = valorAtual.replace(" ", "");
 
-            if ( valorAtual.isEmpty() ){
+            if (valorAtual.isEmpty()) {
                 mainBinding.valorTotalPecasField.getEditText().setText(pecaModel.getValorPecaMultipl());
-            }else{
+            } else {
                 Double valorJaTa = MathUtils.converterParaDouble(valorAtualCerto);
                 Double valorPraSomar = MathUtils.converterParaDouble(pecaModel.getValorPecaMultipl());
                 Double somaTotal = valorJaTa + valorPraSomar;
@@ -471,11 +552,11 @@ public class OSActivity extends AppCompatActivity {
             adicionarItemBinding.valorField.getEditText().setText("0");
         });
         b.setView(adicionarItemBinding.getRoot());
-        dialogAdicionarItem  = b.create();
+        dialogAdicionarItem = b.create();
     }
 
     @SuppressLint({"NotifyDataSetChanged", "SetTextI18n"})
-    private void configurarDialogServico(){
+    private void configurarDialogServico() {
         AlertDialog.Builder b = new AlertDialog.Builder(OSActivity.this);
         b.setTitle("Adicionar serviço");
         LayoutAdicionarItemBinding adicionarItemBinding = LayoutAdicionarItemBinding.inflate(getLayoutInflater());
@@ -497,17 +578,17 @@ public class OSActivity extends AppCompatActivity {
 
         adicionarItemBinding.nomeField.setAdapter(adapter);
 
-        adicionarItemBinding.nomeField.setOnClickListener( view -> adicionarItemBinding.nomeField.showDropDown());
+        adicionarItemBinding.nomeField.setOnClickListener(view -> adicionarItemBinding.nomeField.showDropDown());
         adicionarItemBinding.nomeField.setOnItemClickListener((parent, view, position, id) -> {
 
             String selectedFrase = (String) parent.getItemAtPosition(position);
             adicionarItemBinding.nomeField.setText(selectedFrase);
 
             // Você pode fazer qualquer coisa com a frase selecionada aqui
-            Toast.makeText(getApplicationContext(),  selectedFrase + " selecionado!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplicationContext(), selectedFrase + " selecionado!", Toast.LENGTH_SHORT).show();
         });
 
-        adicionarItemBinding.adicionarPeca.setOnClickListener( view -> {
+        adicionarItemBinding.adicionarPeca.setOnClickListener(view -> {
             String nomeServico = adicionarItemBinding.nomeField.getText().toString();
             String precoString = adicionarItemBinding.valorField.getEditText().getText().toString();
 
@@ -521,9 +602,9 @@ public class OSActivity extends AppCompatActivity {
             String valorAtual = mainBinding.valorServicoField.getEditText().getText().toString().trim().replace("R$", "");
             String valorAtualCerto = valorAtual.replace(" ", "");
 
-            if ( valorAtual.isEmpty() ){
+            if (valorAtual.isEmpty()) {
                 mainBinding.valorServicoField.getEditText().setText(serviceModel.getValor());
-            }else{
+            } else {
                 Double valorJaTa = MathUtils.converterParaDouble(valorAtualCerto);
                 Double valorPraSomar = MathUtils.converterParaDouble(serviceModel.getValor());
                 Double somaTotal = valorJaTa + valorPraSomar;
@@ -538,38 +619,37 @@ public class OSActivity extends AppCompatActivity {
             adicionarItemBinding.valorField.getEditText().setText("0");
         });
         b.setView(adicionarItemBinding.getRoot());
-        dialogAdicionarServico  = b.create();
+        dialogAdicionarServico = b.create();
     }
+
     private void configurarDialogCarregando() {
         AlertDialog.Builder b = new AlertDialog.Builder(OSActivity.this);
         b.setView(LoadingLayoutBinding.inflate(getLayoutInflater()).getRoot());
         dialogCarregando = b.create();
     }
 
-    public void baterFoto(){
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
-            if ( checkSelfPermission(android.Manifest.permission.CAMERA) == PackageManager.PERMISSION_DENIED || checkSelfPermission(android.Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_DENIED){
+    public void baterFoto() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (checkSelfPermission(android.Manifest.permission.CAMERA) == PackageManager.PERMISSION_DENIED || checkSelfPermission(android.Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_DENIED) {
                 String[] permissions = {android.Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE};
                 requestPermissions(permissions, PERMISSON_CODE);
-            }
-            else {
+            } else {
                 // already permisson
                 openCamera();
             }
-        }
-        else{
+        } else {
             // system < M
             openCamera();
         }
     }
 
 
-    public void openCamera(){
-        ContentValues values  = new ContentValues();
+    public void openCamera() {
+        ContentValues values = new ContentValues();
         values.put(MediaStore.Images.Media.TITLE, "nova picture");
         values.put(MediaStore.Images.Media.DESCRIPTION, "Imagem tirada da câmera");
         imageUri = getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
-        Intent intentCamera =  new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        Intent intentCamera = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         intentCamera.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
         startActivityForResult(intentCamera, REQUEST_IMAGE_CAPTURE);
     }
@@ -589,7 +669,7 @@ public class OSActivity extends AppCompatActivity {
             serviceIngur.postarImage("Bearer " + TOKEN, description, imagePart).enqueue(new Callback<ResponseIngurModel>() {
                 @Override
                 public void onResponse(Call<ResponseIngurModel> call, Response<ResponseIngurModel> response) {
-                    if (response.isSuccessful()){
+                    if (response.isSuccessful()) {
                         assert response.body() != null;
                         imagesLink.add(Objects.requireNonNull(response.body()).getData().getLink());
                         adapterImages.notifyDataSetChanged();
@@ -603,8 +683,7 @@ public class OSActivity extends AppCompatActivity {
                     dialogCarregando.dismiss();
                 }
             });
-        }
-        else if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && data != null){
+        } else if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && data != null) {
             dialogCarregando.show();
             File imageFile = ImageUtils.uriToFile(getApplicationContext(), Objects.requireNonNull(data.getData()));
             RequestBody description = RequestBody.create(MediaType.parse("text/plain"), "Image Description");
@@ -615,7 +694,7 @@ public class OSActivity extends AppCompatActivity {
             serviceIngur.postarImage("Bearer " + TOKEN, description, imagePart).enqueue(new Callback<ResponseIngurModel>() {
                 @Override
                 public void onResponse(Call<ResponseIngurModel> call, Response<ResponseIngurModel> response) {
-                    if (response.isSuccessful()){
+                    if (response.isSuccessful()) {
                         assert response.body() != null;
                         imagesLink.add(Objects.requireNonNull(response.body()).getData().getLink());
                         adapterImages.notifyDataSetChanged();
@@ -632,19 +711,20 @@ public class OSActivity extends AppCompatActivity {
         }
 
     }
+
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if ( requestCode == PERMISSON_CODE){
-            if( grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED){
+        if (requestCode == PERMISSON_CODE) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 openCamera();
-            }else{
+            } else {
                 Toast.makeText(this, "Conceda as permissões!", Toast.LENGTH_SHORT).show();
             }
         }
     }
 
-    private void configurarRecyclerImages(){
+    private void configurarRecyclerImages() {
         r = mainBinding.recyclerFotos;
         r.setLayoutManager(new LinearLayoutManager(getApplicationContext(), RecyclerView.HORIZONTAL, false));
         r.addItemDecoration(new DividerItemDecoration(getApplicationContext(), DividerItemDecoration.HORIZONTAL));
@@ -655,7 +735,7 @@ public class OSActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        if ( item.getItemId() == android.R.id.home){
+        if (item.getItemId() == android.R.id.home) {
             finish();
         }
         return super.onOptionsItemSelected(item);
