@@ -141,44 +141,46 @@ public class OSActivity extends AppCompatActivity {
                     mainBinding.obsField.getEditText().setText(os.getObs());
 
                     try {
-                        mainBinding.dataAguardandoOrAmento.setText(os.getAguardandoOrcamentoHoraData().split("às")[0]);
-                        mainBinding.horaAguardandoOrAmento.setText(os.getAguardandoOrcamentoHoraData().split("às")[1]);
+                        mainBinding.dataAguardandoOrAmento.setText(os.getAguardandoOrcamentoHoraData().split("às")[0].replace("/", ""));
+                        mainBinding.horaAguardandoOrAmento.setText(os.getAguardandoOrcamentoHoraData().split("às")[1].replace(":", ""));
+                    } catch (Exception ignored) {
+                        Log.d("mayara", "onCreate: " + ignored.getMessage());
+                        Log.d("mayara", "text: " + os.getAguardandoOrcamentoHoraData());
+                    }
+
+                    try {
+                        mainBinding.dataAguardandoAutorizacao.setText(os.getAguardandoAutorizacaoHoraData().split("às")[0].replace("/", ""));
+                        mainBinding.horaAguardandoAutorizacao.setText(os.getAguardandoAutorizacaoHoraData().split("às")[1].replace(":", ""));
                     } catch (Exception ignored) {
                     }
 
                     try {
-                        mainBinding.dataAguardandoAutorizacao.setText(os.getAguardandoAutorizacaoHoraData().split("às")[0]);
-                        mainBinding.horaAguardandoAutorizacao.setText(os.getAguardandoAutorizacaoHoraData().split("às")[1]);
+                        mainBinding.dataServicoAutorizado.setText(os.getServicoAutorizadoHoraData().split("às")[0].replace("/", ""));
+                        mainBinding.horaServicoAutorizado.setText(os.getServicoAutorizadoHoraData().split("às")[1].replace(":", ""));
                     } catch (Exception ignored) {
                     }
 
                     try {
-                        mainBinding.dataServicoAutorizado.setText(os.getServicoAutorizadoHoraData().split("às")[0]);
-                        mainBinding.horaServicoAutorizado.setText(os.getServicoAutorizadoHoraData().split("às")[1]);
+                        mainBinding.dataServicoExecucao.setText(os.getServicoEmExecucaoHoraData().split("às")[0].replace("/", ""));
+                        mainBinding.horaServicoExecucao.setText(os.getServicoEmExecucaoHoraData().split("às")[1].replace(":", ""));
                     } catch (Exception ignored) {
                     }
 
                     try {
-                        mainBinding.dataServicoExecucao.setText(os.getServicoEmExecucaoHoraData().split("às")[0]);
-                        mainBinding.horaServicoExecucao.setText(os.getServicoEmExecucaoHoraData().split("às")[1]);
+                        mainBinding.dataServicoConcluido.setText(os.getServicoConcluidoHoraData().split("às")[0].replace("/", ""));
+                        mainBinding.horaServicoConcluido.setText(os.getServicoConcluidoHoraData().split("às")[1].replace(":", ""));
                     } catch (Exception ignored) {
                     }
 
                     try {
-                        mainBinding.dataServicoConcluido.setText(os.getServicoConcluidoHoraData().split("às")[0]);
-                        mainBinding.horaServicoConcluido.setText(os.getServicoConcluidoHoraData().split("às")[1]);
+                        mainBinding.dataSaiu.setText(os.getSaiuParaEntregaHoraData().split("às")[0].replace("/", ""));
+                        mainBinding.horaSaiu.setText(os.getSaiuParaEntregaHoraData().split("às")[1].replace(":", ""));
                     } catch (Exception ignored) {
                     }
 
                     try {
-                        mainBinding.dataSaiu.setText(os.getSaiuParaEntregaHoraData().split("às")[0]);
-                        mainBinding.horaSaiu.setText(os.getSaiuParaEntregaHoraData().split("às")[1]);
-                    } catch (Exception ignored) {
-                    }
-
-                    try {
-                        mainBinding.dataEntrega.setText(os.getEntregueHoraData().split("às")[0]);
-                        mainBinding.horaEntrega.setText(os.getEntregueHoraData().split("às")[1]);
+                        mainBinding.dataEntrega.setText(os.getEntregueHoraData().split("às")[0].replace("/", ""));
+                        mainBinding.horaEntrega.setText(os.getEntregueHoraData().split("às")[1].replace(":", ""));
                     } catch (Exception ignored) {
                     }
 
@@ -563,7 +565,7 @@ public class OSActivity extends AppCompatActivity {
 
         adicionarItemBinding.nomeField.setHint("Serviço");
         adicionarItemBinding.valorField.setHint("Valor do serviço $");
-        adicionarItemBinding.quantiadeField.setVisibility(View.GONE);
+//        adicionarItemBinding.quantiadeField.setVisibility(View.GONE);
 
         String[] servicosComplete = {"Teste hidrostático", "Plaina a face do bloco", "Plaina a face do Cabeçote",
                 "Esmerilhar Válvula", "Retificar sede", "Retificar válvula", "Trocar guia de válvula",
@@ -591,10 +593,13 @@ public class OSActivity extends AppCompatActivity {
         adicionarItemBinding.adicionarPeca.setOnClickListener(view -> {
             String nomeServico = adicionarItemBinding.nomeField.getText().toString();
             String precoString = adicionarItemBinding.valorField.getEditText().getText().toString();
+            String quantidadeString = adicionarItemBinding.quantiadeField.getEditText().getText().toString();
 
+            quantidadeString = quantidadeString.isEmpty() ? "0" : quantidadeString;
             precoString = precoString.isEmpty() ? "0.0" : precoString;
 
-            ItemModel serviceModel = new ItemModel(nomeServico, precoString);
+            int quantidade = Integer.parseInt(quantidadeString);
+            ItemModel serviceModel = new ItemModel(nomeServico, precoString, quantidade);
 
             servicos.add(serviceModel);
             adapterServicos.notifyDataSetChanged();
@@ -603,10 +608,10 @@ public class OSActivity extends AppCompatActivity {
             String valorAtualCerto = valorAtual.replace(" ", "");
 
             if (valorAtual.isEmpty()) {
-                mainBinding.valorServicoField.getEditText().setText(serviceModel.getValor());
+                mainBinding.valorServicoField.getEditText().setText(serviceModel.getValorPecaMultipl());
             } else {
                 Double valorJaTa = MathUtils.converterParaDouble(valorAtualCerto);
-                Double valorPraSomar = MathUtils.converterParaDouble(serviceModel.getValor());
+                Double valorPraSomar = MathUtils.converterParaDouble(serviceModel.getValorPecaMultipl());
                 Double somaTotal = valorJaTa + valorPraSomar;
 
                 mainBinding.valorServicoField.getEditText().setText(

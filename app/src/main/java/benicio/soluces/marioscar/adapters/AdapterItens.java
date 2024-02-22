@@ -45,17 +45,18 @@ public class AdapterItens extends RecyclerView.Adapter<AdapterItens.MyViewHolder
 
         holder.info.setText(item.toString());
 
-        holder.excluir.setOnLongClickListener( view -> {
+        holder.excluir.setOnClickListener( view -> {
             itens.remove(position);
             Double valorAntigo = MathUtils.converterParaDouble(fieldValue.getEditText().getText().toString());
-            Double valorRemovido = MathUtils.converterParaDouble(item.getValor());
+            Double valorRemovido = MathUtils.converterParaDouble(item.getValorPecaMultipl());
             String valorAtualizado = MathUtils.formatarMoeda((valorAntigo - valorRemovido));
             fieldValue.getEditText().setText(valorAtualizado);
             Toast.makeText(c, "Item removido", Toast.LENGTH_SHORT).show();
             this.notifyDataSetChanged();
 
-            return false;
         });
+
+        holder.itemView.getRootView().setClickable(false);
 
         holder.editar.setVisibility(View.GONE);
 
